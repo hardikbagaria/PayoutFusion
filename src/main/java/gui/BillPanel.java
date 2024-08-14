@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -30,6 +32,9 @@ import javax.swing.table.TableCellRenderer;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import database.Processes;
+import extras.NumberOnlyTextField;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 public class BillPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private DefaultTableModel tableModel;
@@ -163,14 +168,14 @@ public class BillPanel extends JPanel {
         JLabel quantityLabel = new JLabel("Quantity:");
         quantityLabel.setBounds(170, 370, quantityLabel.getPreferredSize().width, 30);
         this.add(quantityLabel);
-        JTextField quantityTextField = new JTextField();
+        JTextField quantityTextField = new NumberOnlyTextField("");
         quantityTextField.setBounds(240, 370, 100, 30);
         this.add(quantityTextField);
 
         JLabel rateLabel = new JLabel("Rate:");
         rateLabel.setBounds(350, 370, rateLabel.getPreferredSize().width, 30);
         this.add(rateLabel);
-        JTextField rateTextField = new JTextField();
+        JTextField rateTextField = new NumberOnlyTextField("");
         rateTextField.setBounds(400, 370, 100, 30);
         this.add(rateTextField);
 
@@ -179,12 +184,27 @@ public class BillPanel extends JPanel {
         addItemButton.setBounds(510, 370, 100, 30); // x, y, width, height
         this.add(addItemButton);
 
-        // Table for Items
-        String[] columnNames = {"Sr.No", "Item Name", "Quantity", "Rate", "Amount", "Remove"};	
-        tableModel = new DefaultTableModel(columnNames, 0);
-        JTable table = new JTable(tableModel);
+        // Table for Items	
+        tableModel = new DefaultTableModel(new String[] {"Sr.No", "Item Name", "Quantity", "Rate", "Amount", "Remove"},0);
+        JTable table = new JTable();
+        table.getTableHeader().setResizingAllowed(false); 
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setModel(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 410, 1060, 170); // x, y, width, height
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int column = table.columnAtPoint(e.getPoint());
+                if (column != 5) {
+                    table.editingStopped(null);
+                    boolean isEditing = table.isEditing();
+                    if (!isEditing) {
+                        JOptionPane.showMessageDialog(null, "You can't edit here");
+                    }
+                }
+            }
+        });
+        scrollPane.setBounds(10, 410, 1060, 170);
         this.add(scrollPane);
 
         // Add Button Renderer and Editor for Remove button
@@ -197,8 +217,25 @@ public class BillPanel extends JPanel {
                 String itemName = (String) itemsDropdown.getSelectedItem();
                 String quantityText = quantityTextField.getText();
                 String rateText = rateTextField.getText();
-
-                if (itemName != null && !itemName.equals("--Select Item--") && !quantityText.isEmpty() && !rateText.isEmpty()) {
+                StringBuilder errorMessages = new StringBuilder();
+                if(itemName == "--Select Item--") {
+                	errorMessages.append("No Item Selected. \n");
+                	
+                }
+                if(quantityText.isEmpty()) {
+                    errorMessages.append("No Quantity Given. \n");
+                	
+                }
+                if(rateText.isEmpty()) {
+                	errorMessages.append("No Rate Given. \n");
+                }
+                if (errorMessages.length() > 0) {
+                    JOptionPane.showMessageDialog(null, 
+                            errorMessages.toString(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                     try {
                         int quantity = Integer.parseInt(quantityText);
                         double rate = Double.parseDouble(rateText);
@@ -230,7 +267,6 @@ public class BillPanel extends JPanel {
                         ex.printStackTrace(); // Handle number format exception
                     }
                 }
-            }
         });
 
         // Total Taxable Value
@@ -255,7 +291,7 @@ public class BillPanel extends JPanel {
         JLabel transportationLabel = new JLabel("Transportation:");
         transportationLabel.setBounds(540, 591, 120, 30);
         this.add(transportationLabel);
-        transportationField = new JTextField("0");
+        transportationField = new JTextField("");
         transportationField.setBounds(670, 591, 100, 30);
         this.add(transportationField);
 
@@ -267,14 +303,20 @@ public class BillPanel extends JPanel {
         grandTotalField.setBounds(890, 591, 100, 30);
         grandTotalField.setEditable(false);
         this.add(grandTotalField);
-
-        // Transportation Field Action Listener
-        transportationField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        transportationField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateTotals();
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateTotals();
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {
                 updateTotals();
             }
         });
-
         // Table Model Listener to update totals
         tableModel.addTableModelListener(e -> updateTotals());
     
@@ -287,9 +329,9 @@ public class BillPanel extends JPanel {
     btnNewButton.setBorderPainted(false);
     btnNewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+        	updateTotals();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             StringBuilder errorMessages = new StringBuilder();
-
             // Check if table is empty
             if (model.getRowCount() == 0) {
                 errorMessages.append("No data items added. \n");
@@ -344,7 +386,8 @@ public class BillPanel extends JPanel {
                 datePicker.setDate(null);
                 int billNo = Processes.getBillNo();
                 BillNumberLabel.setText(String.valueOf(billNo));
-                
+                transportationField.setText(null);
+                VField.setText(null);
             } catch (ClassNotFoundException | SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, 
