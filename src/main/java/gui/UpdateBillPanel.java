@@ -1,5 +1,4 @@
 package gui;
-import javax.swing.JOptionPane;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -9,16 +8,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,18 +30,22 @@ import javax.swing.table.TableCellRenderer;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
+
 import database.Processes;
 import extras.NumberOnlyTextField;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-public class BillPanel extends JPanel {
-    private static final long serialVersionUID = 1L;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+
+public class UpdateBillPanel extends JPanel {
     private DefaultTableModel tableModel;
     private JTextField totalTaxableValueField;
     private JTextField gstField;
     private JTextField transportationField;
     private JTextField grandTotalField;
-    public BillPanel() throws ClassNotFoundException, SQLException {
+	private static final long serialVersionUID = 1L;
+	public UpdateBillPanel() throws ClassNotFoundException, SQLException {
         this.setBackground(Color.WHITE);
         this.setLayout(null); // Absolute layout for fixed positioning
 
@@ -50,57 +53,56 @@ public class BillPanel extends JPanel {
         this.setPreferredSize(new Dimension(1080, 680)); // Adjust size as needed
 
         // Title Label
-        JLabel titleLabel = new JLabel("Create Bills Panel");
+        JLabel titleLabel = new JLabel("Update Bills Panel");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(Color.BLUE);
         titleLabel.setBounds(10, 10, 300, 30); // x, y, width, height
         this.add(titleLabel);
-
+        
+        //Bill dropdown
+        ArrayList<String> allBills = Processes.BillNo();
+        Collections.sort(allBills);
+        String[] optionsArray = new String[allBills.size()];
+        allBills.toArray(optionsArray);
+        JComboBox<String> comboBox = new JComboBox<String>(optionsArray);
+        String defaultValue = "--Select BillNo--";
+        comboBox.insertItemAt(defaultValue, 0);
+        comboBox.setSelectedIndex(0);
+        comboBox.setBounds(10, 50, 200, 30);
+        add(comboBox);
+        
         // Date
         JLabel dateLabel = new JLabel("Date:");
         dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         dateLabel.setBounds(220, 51, dateLabel.getPreferredSize().width, 30);
         this.add(dateLabel);
         DatePickerSettings dateSettings = new DatePickerSettings();
-        dateSettings.setFormatForDatesCommonEra(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        dateSettings.setFormatForDatesCommonEra(format);
         DatePicker datePicker = new DatePicker(dateSettings);
         datePicker.setBounds(257, 51, datePicker.getPreferredSize().width, 30);
-        datePicker.setDateToToday();
         this.add(datePicker);
         
-        // Bill No
-        JLabel BillNoLabel = new JLabel("Bill No:");
-        BillNoLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        BillNoLabel.setBounds(402, 51, BillNoLabel.getPreferredSize().width, 30);
-        this.add(BillNoLabel);
-        JLabel BillNumberLabel = new JLabel();
-        int billNo = Processes.getBillNo();
-        BillNumberLabel.setText(String.valueOf(billNo));
-        BillNumberLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        BillNumberLabel.setBounds(455, 51, BillNumberLabel.getPreferredSize().width, 30);
-        this.add(BillNumberLabel);
+        // Party Name
+        JLabel partyNameLabel = new JLabel("Party Name:");
+        partyNameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        partyNameLabel.setBounds(402, 51, partyNameLabel.getPreferredSize().width, 30);
+        this.add(partyNameLabel);
+        JLabel PartyName = new JLabel();
+        PartyName.setFont(new Font("Arial", Font.PLAIN, 14));
+        PartyName.setBounds(489, 50, 150, 30);
+        this.add(PartyName);
         
         //Vehicle details
         JLabel VLabel = new JLabel("Vehicle Details:");
         VLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        VLabel.setBounds(489, 53, VLabel.getPreferredSize().width, 26);
+        VLabel.setBounds(673, 51, VLabel.getPreferredSize().width, 26);
         add(VLabel);
         
         JTextField VField = new JTextField(null);
-        VField.setBounds(596, 51, 100, 30);
+        VField.setBounds(780, 50, 100, 30);
         add(VField);
-
-        // Dropdown
-        ArrayList<String> options = Processes.Names();
-        Collections.sort(options);
-        String[] optionsArray = new String[options.size()];
-        options.toArray(optionsArray);
-        JComboBox<String> dropdown = new JComboBox<>(optionsArray);
-        String defaultValue = "--Select Party--";
-        dropdown.insertItemAt(defaultValue, 0);
-        dropdown.setSelectedIndex(0);
-        dropdown.setBounds(10, 50, 200, 30); // x, y, width, height
-        this.add(dropdown);
+        
         
         // Information Labels
         JLabel Address1L = new JLabel();
@@ -110,7 +112,7 @@ public class BillPanel extends JPanel {
         JLabel CntPersonL = new JLabel();
         JLabel PhoneNoL = new JLabel();
         JLabel DestinationL = new JLabel();
-
+        
         // Style the labels
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
         Color labelColor = Color.DARK_GRAY;
@@ -118,7 +120,6 @@ public class BillPanel extends JPanel {
             lblNewLabel.setFont(labelFont);
             lblNewLabel.setForeground(labelColor);
         }
-
         // Add Labels to Panel with Descriptions
         String[] descriptions = {"Address 1:", "Address 2:", "Address 3:", "GST:", "Contact Person:", "Phone No:", "Destination:"};
         JLabel[] labels = {Address1L, Address2L, Address3L, GSTL, CntPersonL, PhoneNoL, DestinationL};
@@ -132,26 +133,7 @@ public class BillPanel extends JPanel {
             labels[i].setBounds(170, 90 + i * 40, 300, 30); // x, y, width, height
             this.add(labels[i]);
         }
-        // Dropdown Item Listener
-        dropdown.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    try {
-                    	String selectedItem = (String) dropdown.getSelectedItem();
-                        Address1L.setText(Processes.getAddress1(selectedItem));
-                        Address2L.setText(Processes.getAddress2(selectedItem));
-                        Address3L.setText(Processes.getAddress3(selectedItem));
-                        GSTL.setText(Processes.getGST(selectedItem));
-                        CntPersonL.setText(Processes.getCntPerson(selectedItem));
-                        PhoneNoL.setText(Processes.getPhoneNo(selectedItem));
-                        DestinationL.setText(Processes.getDestination(selectedItem));
-                    } catch (ClassNotFoundException | SQLException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        });
-
+        
         // Items Dropdown
         ArrayList<String> itemsOptions = Processes.Items();
         Collections.sort(itemsOptions);
@@ -182,6 +164,7 @@ public class BillPanel extends JPanel {
         // Add Item Button
         JButton addItemButton = new JButton("Add Item");
         addItemButton.setBounds(510, 370, 100, 30); // x, y, width, height
+        addItemButton.setEnabled(false);
         this.add(addItemButton);
 
         // Table for Items	
@@ -317,117 +300,53 @@ public class BillPanel extends JPanel {
                 updateTotals();
             }
         });
+        // Dropdown Bill Listener
+        comboBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+            	if (e.getStateChange() == ItemEvent.SELECTED) {
+            		if((String) comboBox.getSelectedItem() != "--Select BillNo--") {
+	            		 try {
+	            			addItemButton.setEnabled(true);
+	            			int selectedItem = Integer.parseInt((String) comboBox.getSelectedItem());
+	            			String name = Processes.getName(selectedItem);
+							PartyName.setText(name);
+							String date = Processes.getDate(selectedItem);
+	            	        datePicker.setDate(LocalDate.parse(date,format));
+	                        VField.setText(Processes.getVDetails(selectedItem));
+	            	        Address1L.setText(Processes.getAddress1(name));
+	                        Address2L.setText(Processes.getAddress2(name));
+	                        Address3L.setText(Processes.getAddress3(name));
+	                        GSTL.setText(Processes.getGST(name));
+	                        CntPersonL.setText(Processes.getCntPerson(name));
+	                        PhoneNoL.setText(Processes.getPhoneNo(name));
+	                        DestinationL.setText(Processes.getDestination(name));
+	                        // Add row to table
+	                        
+	            		 } catch (ClassNotFoundException | SQLException e1) {
+							e1.printStackTrace();
+						}	 
+            		}else {
+            			addItemButton.setEnabled(false);
+            			datePicker.clear();
+            			PartyName.setText("");
+            			VField.setText("");
+            			Address1L.setText("");
+            			Address2L.setText("");
+            			Address3L.setText("");
+            			GSTL.setText("");
+            			CntPersonL.setText("");
+            			PhoneNoL.setText("");
+            			DestinationL.setText("");
+                    	DefaultTableModel model = (DefaultTableModel) table.getModel();
+                        model.setRowCount(0);
+            		}
+            	}
+            }    
+        });
         // Table Model Listener to update totals
         tableModel.addTableModelListener(e -> updateTotals());
-    
-    // Creating Bill
-    JButton createBillButton = new JButton("Create Bill");
-    createBillButton.setBackground(new Color(34, 139, 34)); // Forest Green
-    createBillButton.setForeground(Color.WHITE);
-    createBillButton.setFont(new Font("Arial", Font.BOLD, 14));
-    createBillButton.setOpaque(true);
-    createBillButton.setBorderPainted(false);
-    createBillButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        	updateTotals();
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-            StringBuilder errorMessages = new StringBuilder();
-            // Check if table is empty
-            if (model.getRowCount() == 0) {
-                errorMessages.append("No data items added. \n");
-            }
-
-            // Check if selected item is valid
-            String selectedItem = (String) dropdown.getSelectedItem();
-            if ("--Select Party--".equals(selectedItem)) {
-                errorMessages.append("Please select a valid Party.\n");
-            }
-
-            // Check if date is selected
-            LocalDate date = datePicker.getDate();
-            if (date == null) {
-                errorMessages.append("Please select a date.\n");
-            }
-
-            // If there are validation errors, show them in a single dialog
-            if (errorMessages.length() > 0) {
-                JOptionPane.showMessageDialog(null, 
-                        errorMessages.toString(), 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Proceed with the normal processing if no errors
-            try {
-            	int Bno = Integer.parseInt(BillNumberLabel.getText());
-                for (int row = 0; row < model.getRowCount(); row++) {
-                    int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
-                    String itemName = model.getValueAt(row, 1).toString();
-                    double quantity = Double.parseDouble(model.getValueAt(row, 2).toString());
-                    double rate = Double.parseDouble(model.getValueAt(row, 3).toString());
-                    double amount = Double.parseDouble(model.getValueAt(row, 4).toString());
-                    Processes.createBill(Bno, srNo, itemName, quantity, rate, amount);
-                }
-                String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                String VDetails = VField.getText();
-                Double TaxableAmount = Double.parseDouble(totalTaxableValueField.getText());
-                Double gst = Double.parseDouble(gstField.getText());
-                Double Total = Double.parseDouble(grandTotalField.getText());
-                Double Transportation = Double.parseDouble(transportationField.getText());
-                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
-
-                JOptionPane.showMessageDialog(null, 
-                        "Bill created successfully!", 
-                        "Success", 
-                        JOptionPane.INFORMATION_MESSAGE);
-                model.setRowCount(0);
-                dropdown.setSelectedIndex(0);
-                datePicker.setDate(null);
-                int billNo = Processes.getBillNo();
-                BillNumberLabel.setText(String.valueOf(billNo));
-                transportationField.setText(null);
-                VField.setText(null);
-            } catch (ClassNotFoundException | SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, 
-                        "An error occurred while creating the bill. Please try again.", 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, 
-                        "Please ensure all numerical fields are correctly filled.", 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    });
-    createBillButton.setBounds(965, 639,createBillButton.getPreferredSize().width, 30);
-    add(createBillButton);
-
-    JButton cancelButton = new JButton("Cancel");
-    cancelButton.setBackground(Color.RED); // Forest Green
-    cancelButton.setForeground(Color.WHITE);
-    cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
-    cancelButton.setOpaque(true);
-    cancelButton.setBorderPainted(false);
-    cancelButton.setBounds(850, 639,createBillButton.getPreferredSize().width, 30);
-    add(cancelButton);
-    cancelButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        	DefaultTableModel model = (DefaultTableModel) table.getModel();
-            model.setRowCount(0);
-            dropdown.setSelectedIndex(0);
-            datePicker.setDate(null);
-            transportationField.setText(null);
-            VField.setText(null);
-            itemsDropdown.setSelectedIndex(0);
-            quantityTextField.setText("");
-            rateTextField.setText("");
-        }    
-    });
-    }
-    private void updateTotals() {
+	}
+	private void updateTotals() {
         double totalTaxableValue = 0;
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             double amount = (Double) tableModel.getValueAt(i, 4);
@@ -463,7 +382,7 @@ public class BillPanel extends JPanel {
         }
     }
 
- // Button Editor class
+    // Button Editor class
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private static final long serialVersionUID = 1L;
         private JButton button;
@@ -481,7 +400,6 @@ public class BillPanel extends JPanel {
             this.button.setText((value == null) ? "" : value.toString());
             return this.button;
         }
-
         public Object getCellEditorValue() {
             return this.button.getText();
         }
@@ -505,5 +423,4 @@ public class BillPanel extends JPanel {
             fireEditingStopped();
         }
     }
-
 }

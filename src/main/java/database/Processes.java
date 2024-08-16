@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 public class Processes {
+	
     public static ArrayList<String> Names() throws ClassNotFoundException, SQLException {
         ArrayList<String> stringList = new ArrayList<>();
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -17,6 +18,21 @@ public class Processes {
         ResultSet rs = s.executeQuery(sql);
         while (rs.next()) {
             stringList.add(rs.getString("Name"));
+        }
+        rs.close();
+        s.close();
+        c.close();
+        return stringList;
+    }
+    public static ArrayList<String> BillNo() throws ClassNotFoundException, SQLException {
+        ArrayList<String> stringList = new ArrayList<>();
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/payoutfusion", "root", "root");
+        String sql = "Select BillNo from billstable;";
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery(sql);
+        while (rs.next()) {
+            stringList.add(rs.getString("BillNo"));
         }
         rs.close();
         s.close();
@@ -48,6 +64,54 @@ public class Processes {
         ResultSet rs = preparedStatement.executeQuery();
         if (rs.next()) {
             result = rs.getString(detail);
+        }
+        rs.close();
+        preparedStatement.close();
+        c.close();
+        return result;
+    }
+    public static String getVDetails(int BillNo) throws ClassNotFoundException, SQLException {
+        String result = null;
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/payoutfusion", "root", "root");
+        String sql = "SELECT VehicleDetails FROM billstable WHERE BillNo=?";
+        PreparedStatement preparedStatement = c.prepareStatement(sql);
+        preparedStatement.setInt(1, BillNo);
+        ResultSet rs = preparedStatement.executeQuery();
+        if (rs.next()) {
+            result = rs.getString("VehicleDetails");
+        }
+        rs.close();
+        preparedStatement.close();
+        c.close();
+        return result;
+    }
+    public static String getDate(int Number) throws ClassNotFoundException, SQLException {
+        String result = null;
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/payoutfusion", "root", "root");
+        String sql = "SELECT Date FROM billstable WHERE BillNo=?";
+        PreparedStatement preparedStatement = c.prepareStatement(sql);
+        preparedStatement.setInt(1, Number);
+        ResultSet rs = preparedStatement.executeQuery();
+        if (rs.next()) {
+            result = rs.getString("Date");
+        }
+        rs.close();
+        preparedStatement.close();
+        c.close();
+        return result;
+    }
+    public static String getName(int Number) throws ClassNotFoundException, SQLException {
+        String result = null;
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/payoutfusion", "root", "root");
+        String sql = "SELECT PartyName FROM billstable WHERE BillNo=?";
+        PreparedStatement preparedStatement = c.prepareStatement(sql);
+        preparedStatement.setInt(1, Number);
+        ResultSet rs = preparedStatement.executeQuery();
+        if (rs.next()) {
+            result = rs.getString("PartyName");
         }
         rs.close();
         preparedStatement.close();

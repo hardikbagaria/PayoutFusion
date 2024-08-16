@@ -106,9 +106,7 @@ public class PayoutFusionGUI{
         
         BillPanel createBillPanel = new BillPanel();
         
-        JPanel updateBillPanel = new JPanel();
-        updateBillPanel.setBackground(Color.WHITE);
-        updateBillPanel.add(new JLabel("Update Bills Panel"));
+        JPanel updateBillPanel = new UpdateBillPanel();
 
         JPanel deleteBillPanel = new JPanel();
         deleteBillPanel.setBackground(Color.WHITE);
