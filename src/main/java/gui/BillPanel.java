@@ -321,13 +321,13 @@ public class BillPanel extends JPanel {
         tableModel.addTableModelListener(e -> updateTotals());
     
     // Creating Bill
-    JButton btnNewButton = new JButton("Create Bill");
-    btnNewButton.setBackground(new Color(34, 139, 34)); // Forest Green
-    btnNewButton.setForeground(Color.WHITE);
-    btnNewButton.setFont(new Font("Arial", Font.BOLD, 14));
-    btnNewButton.setOpaque(true);
-    btnNewButton.setBorderPainted(false);
-    btnNewButton.addActionListener(new ActionListener() {
+    JButton createBillButton = new JButton("Create Bill");
+    createBillButton.setBackground(new Color(34, 139, 34)); // Forest Green
+    createBillButton.setForeground(Color.WHITE);
+    createBillButton.setFont(new Font("Arial", Font.BOLD, 14));
+    createBillButton.setOpaque(true);
+    createBillButton.setBorderPainted(false);
+    createBillButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
         	updateTotals();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -402,10 +402,31 @@ public class BillPanel extends JPanel {
             }
         }
     });
+    createBillButton.setBounds(965, 639,createBillButton.getPreferredSize().width, 30);
+    add(createBillButton);
 
-
-    btnNewButton.setBounds(957, 639,btnNewButton.getPreferredSize().width, 30);
-    add(btnNewButton);
+    JButton cancelButton = new JButton("Cancel");
+    cancelButton.setBackground(Color.RED); // Forest Green
+    cancelButton.setForeground(Color.WHITE);
+    cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+    cancelButton.setOpaque(true);
+    cancelButton.setBorderPainted(false);
+    cancelButton.setBounds(850, 639,createBillButton.getPreferredSize().width, 30);
+    add(cancelButton);
+    cancelButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        	DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+            dropdown.setSelectedIndex(0);
+            datePicker.setDate(null);
+            transportationField.setText(null);
+            VField.setText(null);
+            itemsDropdown.setSelectedIndex(0);
+            quantityTextField.setText("");
+            rateTextField.setText("");
+        }    
+    });
+    
     }
     private void updateTotals() {
         double totalTaxableValue = 0;
