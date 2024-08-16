@@ -10,6 +10,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -307,6 +308,8 @@ public class UpdateBillPanel extends JPanel {
             		if((String) comboBox.getSelectedItem() != "--Select BillNo--") {
 	            		 try {
 	            			addItemButton.setEnabled(true);
+	                    	DefaultTableModel model = (DefaultTableModel) table.getModel();
+	                        model.setRowCount(0);
 	            			int selectedItem = Integer.parseInt((String) comboBox.getSelectedItem());
 	            			String name = Processes.getName(selectedItem);
 							PartyName.setText(name);
@@ -321,7 +324,17 @@ public class UpdateBillPanel extends JPanel {
 	                        PhoneNoL.setText(Processes.getPhoneNo(name));
 	                        DestinationL.setText(Processes.getDestination(name));
 	                        // Add row to table
-	                        
+	                        ResultSet rs = Processes.resultSet(selectedItem);
+	                        while (rs.next()) {
+	                        	int SrNo = rs.getInt("SrNo");
+	                            String itemName = rs.getString("ItemName"); // Retrieve the ItemName column
+	                            int quantity = (int) Math.round(rs.getDouble("Quantity"));       // Retrieve the Quantity column
+	                            double rate = rs.getDouble("Rate");         // Retrieve the Rate column
+	                            double amount = rs.getDouble("Amount");     // Retrieve the Amount column
+	                            
+	                            // Add a new row to the table model
+	                            tableModel.addRow(new Object[]{SrNo, itemName, quantity, rate, amount, "Remove"});
+	                        }
 	            		 } catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}	 

@@ -193,5 +193,14 @@ public class Processes {
         ps.close();
         c.close();
     }
+    public static ResultSet resultSet(int billNo) throws ClassNotFoundException, SQLException{
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/payoutfusion", "root", "root");
+        String sql = "Select `SrNo`,`ItemName`,`Quantity`,`Rate`,`Amount` from itemstable WHERE BillNo=?";
+        PreparedStatement ps = c.prepareStatement(sql);
+        ps.setInt(1, billNo);
+        ResultSet rs = ps.executeQuery();
+    	return rs;
+    }
 }
   
