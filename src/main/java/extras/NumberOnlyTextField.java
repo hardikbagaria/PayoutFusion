@@ -4,8 +4,9 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 public class NumberOnlyTextField extends JTextField {
+	private static final long serialVersionUID = 1L;
 
-    public NumberOnlyTextField(String defaultValue) {
+	public NumberOnlyTextField(String defaultValue) {
         super(defaultValue); // Set the default value
         ((AbstractDocument) this.getDocument()).setDocumentFilter(new NumberFilter());
     }

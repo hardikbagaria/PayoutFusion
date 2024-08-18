@@ -89,9 +89,17 @@ public class UpdateBillPanel extends JPanel {
         partyNameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         partyNameLabel.setBounds(402, 51, partyNameLabel.getPreferredSize().width, 30);
         this.add(partyNameLabel);
-        JLabel PartyName = new JLabel();
+        ArrayList<String> allParty = Processes.Names();
+        Collections.sort(allParty);
+        String[] PartyArray = new String[allParty.size()];
+        allParty.toArray(PartyArray);
+        JComboBox<String> PartyName = new JComboBox<String>(PartyArray);
+        String defaultValueP = "--Select Party--";
+        PartyName.insertItemAt(defaultValueP, 0);
+        PartyName.setSelectedIndex(0);
         PartyName.setFont(new Font("Arial", Font.PLAIN, 14));
         PartyName.setBounds(489, 50, 150, 30);
+        PartyName.setEnabled(false);
         this.add(PartyName);
         
         //Vehicle details
@@ -277,6 +285,7 @@ public class UpdateBillPanel extends JPanel {
         this.add(transportationLabel);
         transportationField = new JTextField("");
         transportationField.setBounds(670, 591, 100, 30);
+        transportationField.setEditable(false);
         this.add(transportationField);
 
         // Grand Total
@@ -308,21 +317,27 @@ public class UpdateBillPanel extends JPanel {
             		if((String) comboBox.getSelectedItem() != "--Select BillNo--") {
 	            		 try {
 	            			addItemButton.setEnabled(true);
+	            	        transportationField.setEditable(true);
 	                    	DefaultTableModel model = (DefaultTableModel) table.getModel();
 	                        model.setRowCount(0);
 	            			int selectedItem = Integer.parseInt((String) comboBox.getSelectedItem());
+	            			PartyName.setEnabled(true);
 	            			String name = Processes.getName(selectedItem);
-							PartyName.setText(name);
+							PartyName.setSelectedItem(name);
+							String name1 = PartyName.getSelectedItem().toString();
 							String date = Processes.getDate(selectedItem);
 	            	        datePicker.setDate(LocalDate.parse(date,format));
 	                        VField.setText(Processes.getVDetails(selectedItem));
-	            	        Address1L.setText(Processes.getAddress1(name));
-	                        Address2L.setText(Processes.getAddress2(name));
-	                        Address3L.setText(Processes.getAddress3(name));
-	                        GSTL.setText(Processes.getGST(name));
-	                        CntPersonL.setText(Processes.getCntPerson(name));
-	                        PhoneNoL.setText(Processes.getPhoneNo(name));
-	                        DestinationL.setText(Processes.getDestination(name));
+							if(name1 != "--Select Party--") {
+		            	        Address1L.setText(Processes.getAddress1(name1));
+		                        Address2L.setText(Processes.getAddress2(name1));
+		                        Address3L.setText(Processes.getAddress3(name1));
+		                        GSTL.setText(Processes.getGST(name1));
+		                        CntPersonL.setText(Processes.getCntPerson(name1));
+		                        PhoneNoL.setText(Processes.getPhoneNo(name1));
+		                        DestinationL.setText(Processes.getDestination(name1));
+							}
+	                        transportationField.setText(Processes.getTDetails(selectedItem));
 	                        // Add row to table
 	                        ResultSet rs = Processes.resultSet(selectedItem);
 	                        while (rs.next()) {
@@ -340,8 +355,10 @@ public class UpdateBillPanel extends JPanel {
 						}	 
             		}else {
             			addItemButton.setEnabled(false);
+            	        transportationField.setEditable(false);
+            	        PartyName.setEnabled(false);
             			datePicker.clear();
-            			PartyName.setText("");
+            			PartyName.setSelectedIndex(0);
             			VField.setText("");
             			Address1L.setText("");
             			Address2L.setText("");
@@ -350,11 +367,40 @@ public class UpdateBillPanel extends JPanel {
             			CntPersonL.setText("");
             			PhoneNoL.setText("");
             			DestinationL.setText("");
+            	        transportationField.setText("");
                     	DefaultTableModel model = (DefaultTableModel) table.getModel();
                         model.setRowCount(0);
             		}
             	}
             }    
+        });
+        PartyName.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+				String name1 = PartyName.getSelectedItem().toString();
+				if(name1 != "--Select Party--") {
+        	        try {
+						Address1L.setText(Processes.getAddress1(name1));
+	                    Address2L.setText(Processes.getAddress2(name1));
+	                    Address3L.setText(Processes.getAddress3(name1));
+	                    GSTL.setText(Processes.getGST(name1));
+	                    CntPersonL.setText(Processes.getCntPerson(name1));
+	                    PhoneNoL.setText(Processes.getPhoneNo(name1));
+	                    DestinationL.setText(Processes.getDestination(name1));
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+				}else {
+        			Address1L.setText("");
+        			Address2L.setText("");
+        			Address3L.setText("");
+        			GSTL.setText("");
+        			CntPersonL.setText("");
+        			PhoneNoL.setText("");
+        			DestinationL.setText("");
+				}
+            	
+            	
+            }   
         });
         // Table Model Listener to update totals
         tableModel.addTableModelListener(e -> updateTotals());
