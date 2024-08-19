@@ -404,6 +404,143 @@ public class UpdateBillPanel extends JPanel {
         });
         // Table Model Listener to update totals
         tableModel.addTableModelListener(e -> updateTotals());
+        
+        // Creating Bill
+        JButton updateBillButton = new JButton("Update Bill");
+        updateBillButton.setBounds(920, 629, 150, 40);
+        updateBillButton.setBackground(Color.GREEN);
+        updateBillButton.setForeground(Color.WHITE);
+        updateBillButton.setFont(new Font("Arial", Font.BOLD, 16));
+        updateBillButton.setFocusPainted(false); // Remove focus outline
+        this.add(updateBillButton);
+        updateBillButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	updateTotals();
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                StringBuilder errorMessages = new StringBuilder();
+                // Check if table is empty
+                if (model.getRowCount() == 0) {
+                    errorMessages.append("No data items added. \n");
+                }
+
+                // Check if selected item is valid
+                String selectedItem = (String) PartyName.getSelectedItem();
+                if ("--Select Party--".equals(selectedItem)) {
+                    errorMessages.append("Please select a valid Party.\n");
+                }
+
+                // Check if date is selected
+                LocalDate date = datePicker.getDate();
+                if (date == null) {
+                    errorMessages.append("Please select a date.\n");
+                }
+
+                // If there are validation errors, show them in a single dialog
+                if (errorMessages.length() > 0) {
+                    JOptionPane.showMessageDialog(null, 
+                            errorMessages.toString(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Proceed with the normal processing if no errors
+                try {
+                	int Bno = Integer.parseInt(comboBox.getSelectedItem().toString());
+                	Processes.removeBill(Bno);
+                    for (int row = 0; row < model.getRowCount(); row++) {
+                        int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
+                        String itemName = model.getValueAt(row, 1).toString();
+                        double quantity = Double.parseDouble(model.getValueAt(row, 2).toString());
+                        double rate = Double.parseDouble(model.getValueAt(row, 3).toString());
+                        double amount = Double.parseDouble(model.getValueAt(row, 4).toString());
+                        Processes.createBill(Bno, srNo, itemName, quantity, rate, amount);
+                    }
+                    String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    String VDetails = VField.getText();
+                    Double TaxableAmount = Double.parseDouble(totalTaxableValueField.getText());
+                    Double gst = Double.parseDouble(gstField.getText());
+                    Double Total = Double.parseDouble(grandTotalField.getText());
+                    Double Transportation = Double.parseDouble(transportationField.getText());
+                    Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
+
+                    JOptionPane.showMessageDialog(null, 
+                            "Bill Updated successfully!", 
+                            "Success", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    model.setRowCount(0);
+                    PartyName.setSelectedIndex(0);
+                    PartyName.setEnabled(false);
+                    comboBox.setSelectedIndex(0);
+                    datePicker.setDate(null);
+                    transportationField.setText(null);
+                    VField.setText(null);
+                } catch (ClassNotFoundException | SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, 
+                            "An error occurred while creating the bill. Please try again.", 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, 
+                            "Please ensure all numerical fields are correctly filled.", 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });        
+        JButton delateButton = new JButton("Delate");
+        delateButton.setBounds(760, 629, 150, 40);
+        delateButton.setBackground(Color.RED);
+        delateButton.setForeground(Color.WHITE);
+        delateButton.setFont(new Font("Arial", Font.BOLD, 16));
+        delateButton.setFocusPainted(false); // Remove focus outline
+        this.add(delateButton);
+        delateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedItem = (String) comboBox.getSelectedItem();
+                StringBuilder errorMessages1 = new StringBuilder();
+                if ("--Select BillNo--".equals(selectedItem)) {
+                    errorMessages1.append("Please select a valid Bill.\n");
+                }
+                if (errorMessages1.length() > 0) {
+                    JOptionPane.showMessageDialog(null, 
+                            errorMessages1.toString(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                // Display a confirmation dialog with "Yes" and "No" options
+                int result = JOptionPane.showConfirmDialog(null, 
+                                "Do you want to delete Bill No "+ selectedItem + "?", 
+                                "Delete Confirmation", 
+                                JOptionPane.YES_NO_OPTION, 
+                                JOptionPane.QUESTION_MESSAGE);
+                // Check user's choice
+                if (result == JOptionPane.YES_OPTION) {
+                	int Bno = Integer.parseInt(comboBox.getSelectedItem().toString());
+                    try {
+						Processes.removeBill(Bno);
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+                	DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    model.setRowCount(0);
+                    PartyName.setSelectedIndex(0);
+                    PartyName.setEnabled(false);
+                    Object item = comboBox.getSelectedItem();
+                    comboBox.setSelectedItem(defaultValue);
+                    comboBox.removeItem(item);
+                    datePicker.setDate(null);
+                    transportationField.setText(null);
+                    VField.setText(null);
+                    itemsDropdown.setSelectedIndex(0);
+                    quantityTextField.setText("");
+                    rateTextField.setText("");
+                }
+            }    
+        });
+
 	}
 	private void updateTotals() {
         double totalTaxableValue = 0;

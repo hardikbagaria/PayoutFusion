@@ -191,4 +191,17 @@ public class Processes {
     public static String getDestination(String Name) throws ClassNotFoundException, SQLException {
         return getDetail("Destination", Name);
     }
+
+	public static void removeBill(int billNo) throws ClassNotFoundException, SQLException {
+		Connection c = getConnection();
+		String sql = "DELETE FROM itemstable WHERE BillNo=?";
+		PreparedStatement ps = c.prepareStatement(sql);
+        ps.setInt(1, billNo);
+        ps.executeUpdate();
+        String sql1 = "DELETE FROM billstable WHERE BillNo=?";
+        PreparedStatement ps1 = c.prepareStatement(sql1);
+        ps1.setInt(1, billNo);
+        ps1.executeUpdate();
+	}
+	
 }

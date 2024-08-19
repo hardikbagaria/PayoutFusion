@@ -320,99 +320,95 @@ public class BillPanel extends JPanel {
         // Table Model Listener to update totals
         tableModel.addTableModelListener(e -> updateTotals());
     
-    // Creating Bill
-    JButton createBillButton = new JButton("Create Bill");
-    createBillButton.setBackground(new Color(34, 139, 34)); // Forest Green
-    createBillButton.setForeground(Color.WHITE);
-    createBillButton.setFont(new Font("Arial", Font.BOLD, 14));
-    createBillButton.setOpaque(true);
-    createBillButton.setBorderPainted(false);
-    createBillButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        	updateTotals();
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-            StringBuilder errorMessages = new StringBuilder();
-            // Check if table is empty
-            if (model.getRowCount() == 0) {
-                errorMessages.append("No data items added. \n");
-            }
-
-            // Check if selected item is valid
-            String selectedItem = (String) dropdown.getSelectedItem();
-            if ("--Select Party--".equals(selectedItem)) {
-                errorMessages.append("Please select a valid Party.\n");
-            }
-
-            // Check if date is selected
-            LocalDate date = datePicker.getDate();
-            if (date == null) {
-                errorMessages.append("Please select a date.\n");
-            }
-
-            // If there are validation errors, show them in a single dialog
-            if (errorMessages.length() > 0) {
-                JOptionPane.showMessageDialog(null, 
-                        errorMessages.toString(), 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Proceed with the normal processing if no errors
-            try {
-            	int Bno = Integer.parseInt(BillNumberLabel.getText());
-                for (int row = 0; row < model.getRowCount(); row++) {
-                    int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
-                    String itemName = model.getValueAt(row, 1).toString();
-                    double quantity = Double.parseDouble(model.getValueAt(row, 2).toString());
-                    double rate = Double.parseDouble(model.getValueAt(row, 3).toString());
-                    double amount = Double.parseDouble(model.getValueAt(row, 4).toString());
-                    Processes.createBill(Bno, srNo, itemName, quantity, rate, amount);
-                }
-                String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                String VDetails = VField.getText();
-                Double TaxableAmount = Double.parseDouble(totalTaxableValueField.getText());
-                Double gst = Double.parseDouble(gstField.getText());
-                Double Total = Double.parseDouble(grandTotalField.getText());
-                Double Transportation = Double.parseDouble(transportationField.getText());
-                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
-
-                JOptionPane.showMessageDialog(null, 
-                        "Bill created successfully!", 
-                        "Success", 
-                        JOptionPane.INFORMATION_MESSAGE);
-                model.setRowCount(0);
-                dropdown.setSelectedIndex(0);
-                datePicker.setDate(null);
-                int billNo = Processes.getBillNo();
-                BillNumberLabel.setText(String.valueOf(billNo));
-                transportationField.setText(null);
-                VField.setText(null);
-            } catch (ClassNotFoundException | SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, 
-                        "An error occurred while creating the bill. Please try again.", 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, 
-                        "Please ensure all numerical fields are correctly filled.", 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        // Creating Bill
+        JButton createBillButton = new JButton("Create Bill");
+        createBillButton.setBounds(920, 629, 150, 40);
+        createBillButton.setBackground(Color.GREEN);
+        createBillButton.setForeground(Color.WHITE);
+        createBillButton.setFont(new Font("Arial", Font.BOLD, 16));
+        createBillButton.setFocusPainted(false); // Remove focus outline
+        createBillButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		updateTotals();
+	            DefaultTableModel model = (DefaultTableModel) table.getModel();
+	            StringBuilder errorMessages = new StringBuilder();
+	            // Check if table is empty
+	            if (model.getRowCount() == 0) {
+	                errorMessages.append("No data items added. \n");
+	            }
+	
+	            // Check if selected item is valid
+	            String selectedItem = (String) dropdown.getSelectedItem();
+	            if ("--Select Party--".equals(selectedItem)) {
+	                errorMessages.append("Please select a valid Party.\n");
+	            }
+	
+	            // Check if date is selected
+	            LocalDate date = datePicker.getDate();
+	            if (date == null) {
+	                errorMessages.append("Please select a date.\n");
+	            }
+	
+	            // If there are validation errors, show them in a single dialog
+	            if (errorMessages.length() > 0) {
+	                JOptionPane.showMessageDialog(null, 
+	                        errorMessages.toString(), 
+	                        "Error", 
+	                        JOptionPane.ERROR_MESSAGE);
+	                return;
+	            }
+	
+	            // Proceed with the normal processing if no errors
+	            try {
+	            	int Bno = Integer.parseInt(BillNumberLabel.getText());
+	                for (int row = 0; row < model.getRowCount(); row++) {
+	                    int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
+	                    String itemName = model.getValueAt(row, 1).toString();
+	                    double quantity = Double.parseDouble(model.getValueAt(row, 2).toString());
+	                    double rate = Double.parseDouble(model.getValueAt(row, 3).toString());
+	                    double amount = Double.parseDouble(model.getValueAt(row, 4).toString());
+	                    Processes.createBill(Bno, srNo, itemName, quantity, rate, amount);
+	                }
+	                String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+	                String VDetails = VField.getText();
+	                Double TaxableAmount = Double.parseDouble(totalTaxableValueField.getText());
+	                Double gst = Double.parseDouble(gstField.getText());
+	                Double Total = Double.parseDouble(grandTotalField.getText());
+	                Double Transportation = Double.parseDouble(transportationField.getText());
+	                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
+	                JOptionPane.showMessageDialog(null, 
+	                        "Bill created successfully!", 
+	                        "Success", 
+	                        JOptionPane.INFORMATION_MESSAGE);
+	                model.setRowCount(0);
+	                dropdown.setSelectedIndex(0);
+	                datePicker.setDate(null);
+	                int billNo = Processes.getBillNo();
+	                BillNumberLabel.setText(String.valueOf(billNo));
+	                transportationField.setText(null);
+	                VField.setText(null);
+	            } catch (ClassNotFoundException | SQLException ex) {
+	                ex.printStackTrace();
+	                JOptionPane.showMessageDialog(null, 
+	                        "An error occurred while creating the bill. Please try again.", 
+	                        "Error", 
+	                        JOptionPane.ERROR_MESSAGE);
+	            } catch (NumberFormatException ex) {
+	                JOptionPane.showMessageDialog(null, 
+	                        "Please ensure all numerical fields are correctly filled.", 
+	                        "Error", 
+	                        JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
     });
-    createBillButton.setBounds(965, 639,createBillButton.getPreferredSize().width, 30);
     add(createBillButton);
-
     JButton cancelButton = new JButton("Cancel");
-    cancelButton.setBackground(Color.RED); // Forest Green
+    cancelButton.setBounds(760, 629, 150, 40);
+    cancelButton.setBackground(Color.RED);
     cancelButton.setForeground(Color.WHITE);
-    cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
-    cancelButton.setOpaque(true);
-    cancelButton.setBorderPainted(false);
-    cancelButton.setBounds(850, 639,createBillButton.getPreferredSize().width, 30);
-    add(cancelButton);
+    cancelButton.setFont(new Font("Arial", Font.BOLD, 16));
+    cancelButton.setFocusPainted(false); // Remove focus outline
+    this.add(cancelButton);
     cancelButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
         	DefaultTableModel model = (DefaultTableModel) table.getModel();
