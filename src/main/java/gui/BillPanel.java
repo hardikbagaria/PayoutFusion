@@ -291,7 +291,7 @@ public class BillPanel extends JPanel {
         JLabel transportationLabel = new JLabel("Transportation:");
         transportationLabel.setBounds(540, 591, 120, 30);
         this.add(transportationLabel);
-        transportationField = new JTextField("");
+        transportationField = new JTextField("0");
         transportationField.setBounds(670, 591, 100, 30);
         this.add(transportationField);
 
@@ -374,7 +374,10 @@ public class BillPanel extends JPanel {
 	                Double TaxableAmount = Double.parseDouble(totalTaxableValueField.getText());
 	                Double gst = Double.parseDouble(gstField.getText());
 	                Double Total = Double.parseDouble(grandTotalField.getText());
-	                Double Transportation = Double.parseDouble(transportationField.getText());
+	                Double Transportation = 0.0;
+	                if (!transportationField.getText().isEmpty()) {
+	                    Transportation = Double.parseDouble(transportationField.getText());
+	                }
 	                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
 	                JOptionPane.showMessageDialog(null, 
 	                        "Bill created successfully!", 
@@ -385,7 +388,7 @@ public class BillPanel extends JPanel {
 	                datePicker.setDate(null);
 	                int billNo = Processes.getBillNo();
 	                BillNumberLabel.setText(String.valueOf(billNo));
-	                transportationField.setText(null);
+	                transportationField.setText("0");
 	                VField.setText(null);
 	            } catch (ClassNotFoundException | SQLException ex) {
 	                ex.printStackTrace();
@@ -415,7 +418,7 @@ public class BillPanel extends JPanel {
             model.setRowCount(0);
             dropdown.setSelectedIndex(0);
             datePicker.setDate(null);
-            transportationField.setText(null);
+            transportationField.setText("0");
             VField.setText(null);
             itemsDropdown.setSelectedIndex(0);
             quantityTextField.setText("");

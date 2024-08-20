@@ -161,6 +161,9 @@ public class UpdatePartyPanel extends JPanel {
                 if(gstFieldData.equals("") || gstFieldData.length() != 15) {
                 	errorMessages.append("GST Number is Required. \n");                	
                 }
+                if(phoneNoFieldData.length() != 10) {
+                	errorMessages.append("Phone Number Not Valid");
+                }
                 if (errorMessages.length() > 0) {
                     JOptionPane.showMessageDialog(null, 
                             errorMessages.toString(), 
@@ -172,7 +175,7 @@ public class UpdatePartyPanel extends JPanel {
                 try {
                 	Processes.updateParty(Name, address1FieldData, address2FieldData, address3FieldData, gstFieldData, cntPersonFieldData, phoneNoFieldData, emailFieldData, destinationFieldData);
                 	JOptionPane.showMessageDialog(null, "Party Updated Successfully","Success",JOptionPane.INFORMATION_MESSAGE);
-                	dropdown.setSelectedIndex(0);
+                	resetFields();
                 } catch (ClassNotFoundException | SQLException e1) {
 					e1.printStackTrace();
 				}
@@ -181,6 +184,19 @@ public class UpdatePartyPanel extends JPanel {
         this.add(updatePartyButton);
 
         deletePartyButton = new JButton("Delete Party");
+        deletePartyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	String Name = (String) dropdown.getSelectedItem();
+            	try {
+					Processes.delateParty(Name);
+					dropdown.removeItem(Name);
+					JOptionPane.showMessageDialog(null, "Party "+Name+" Delate Successfully.", "Delate Successful",JOptionPane.INFORMATION_MESSAGE);
+				} catch (ClassNotFoundException | SQLException e1) {
+					e1.printStackTrace();
+				}
+            	resetFields();
+            }    
+        });
         deletePartyButton.setBounds(760, 629, 150, 40);
         deletePartyButton.setBackground(Color.RED);
         deletePartyButton.setForeground(Color.WHITE);
@@ -215,6 +231,7 @@ public class UpdatePartyPanel extends JPanel {
 
     // Reset text fields and disable them
     private void resetFields() {
+    	dropdown.setSelectedIndex(0);
         address1Field.setText("");
         address2Field.setText("");
         address3Field.setText("");

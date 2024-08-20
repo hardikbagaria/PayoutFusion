@@ -85,8 +85,21 @@ public class Processes {
         return getDetailByBillNo("PartyName", BillNo);
     }
     public static String getTDetails(int BillNo) throws ClassNotFoundException, SQLException {
-        return getDetailByBillNo("Transportation", BillNo);
+        return getDetailByBillNo("VehicleDetails", BillNo);
     }
+    public static String getTotalValue(int BillNo) throws ClassNotFoundException, SQLException {
+    	return getDetailByBillNo("TotalValue", BillNo);
+    }
+    public static String getGSTValue(int BillNo) throws ClassNotFoundException, SQLException {
+    	return getDetailByBillNo("gst", BillNo);
+    }
+    public static String getTValue(int BillNo) throws ClassNotFoundException, SQLException {
+    	return getDetailByBillNo("Transportation", BillNo);
+    }
+    public static String getGrandTotalValue(int BillNo) throws ClassNotFoundException, SQLException {
+    	return getDetailByBillNo("grandTotal", BillNo);
+    }
+
     private static String getDetailByBillNo(String detail, int BillNo) throws ClassNotFoundException, SQLException {
         String result = null;
         Connection c = getConnection();
@@ -158,7 +171,6 @@ public class Processes {
         ps.setInt(1, billNo);
         return ps.executeQuery();
     }
-
     // Additional helper methods using getDetail
     public static String getAddress1(String Name) throws ClassNotFoundException, SQLException {
         return getDetail("Address1", Name);
@@ -203,9 +215,9 @@ public class Processes {
         Statement s = c.createStatement();
         s.executeUpdate(sql);
     }
-    public static void addParty(String Name, String Address1, String Address2, String Address3, String GST, String CntPerson, int PhoneNo, String Email, String Destination) throws ClassNotFoundException, SQLException {
+    public static void addParty(String Name, String Address1, String Address2, String Address3, String GST, String CntPerson, String phoneNoFieldData, String Email, String Destination) throws ClassNotFoundException, SQLException {
     	Connection c = getConnection();
-    	String sql = "INSERT INTO partydetails VALUES('"+ Name +"','"+Address1+"','"+Address2+"','"+Address3+"','"+GST+"','"+CntPerson+"','"+PhoneNo+"','"+Email+"','"+Destination+"');";
+    	String sql = "INSERT INTO partydetails VALUES('"+ Name +"','"+Address1+"','"+Address2+"','"+Address3+"','"+GST+"','"+CntPerson+"','"+phoneNoFieldData+"','"+Email+"','"+Destination+"');";
         Statement s = c.createStatement();
         s.executeUpdate(sql);
     }
