@@ -12,7 +12,7 @@ public class UpdatePartyPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JComboBox<String> dropdown;
-    private JTextField address1Field, address2Field, address3Field, gstField, cntPersonField, phoneNoField, destinationField;
+    private JTextField address1Field, address2Field, address3Field, gstField, cntPersonField, phoneNoField,emailField, destinationField;
     private JButton updatePartyButton, deletePartyButton;
 
     public UpdatePartyPanel() throws ClassNotFoundException, SQLException {
@@ -96,11 +96,14 @@ public class UpdatePartyPanel extends JPanel {
                 }
             }
         });
-
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setBounds(20, 340, 100, 30);
+        this.add(emailLabel);
+        emailField = createTextField(120,340);
         JLabel destinationLabel = new JLabel("Destination:");
-        destinationLabel.setBounds(20, 340, 100, 30);
+        destinationLabel.setBounds(20, 380, 100, 30);
         this.add(destinationLabel);
-        destinationField = createTextField(120, 340);
+        destinationField = createTextField(120, 380);
 
         // Set up the dropdown action listener
         dropdown.addItemListener(e -> {
@@ -116,6 +119,7 @@ public class UpdatePartyPanel extends JPanel {
                         gstField.setText(Processes.getGST(selectedItem));
                         cntPersonField.setText(Processes.getCntPerson(selectedItem));
                         phoneNoField.setText(Processes.getPhoneNo(selectedItem));
+                        emailField.setText(Processes.getEmail(selectedItem));
                         destinationField.setText(Processes.getDestination(selectedItem));
                     } catch (ClassNotFoundException | SQLException e1) {
                         e1.printStackTrace();
@@ -133,6 +137,47 @@ public class UpdatePartyPanel extends JPanel {
         updatePartyButton.setForeground(Color.WHITE);
         updatePartyButton.setFont(new Font("Arial", Font.BOLD, 16));
         updatePartyButton.setFocusPainted(false); // Remove focus outline
+        updatePartyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	String Name = (String) dropdown.getSelectedItem();
+                String address1FieldData = address1Field.getText();
+                String address2FieldData = address2Field.getText();
+                String address3FieldData = address3Field.getText();
+                String gstFieldData = gstField.getText();
+                String cntPersonFieldData = cntPersonField.getText();
+                String phoneNoFieldData = phoneNoField.getText();
+                String emailFieldData = emailField.getText();
+                String destinationFieldData =  destinationField.getText();
+                StringBuilder errorMessages = new StringBuilder();
+                if(Name.equals("--Select Party--")) {
+                	errorMessages.append("Selected Party is Not Valid");
+                }
+                if(address1FieldData.equals("")) {
+                	errorMessages.append("Address Line 1 is Required. \n");                	
+                }
+                if(address2FieldData.equals("")) {
+                	errorMessages.append("Address Line 2 is Required. \n");                	
+                }
+                if(gstFieldData.equals("") || gstFieldData.length() != 15) {
+                	errorMessages.append("GST Number is Required. \n");                	
+                }
+                if (errorMessages.length() > 0) {
+                    JOptionPane.showMessageDialog(null, 
+                            errorMessages.toString(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                //Proceed With Normal Updation
+                try {
+                	Processes.updateParty(Name, address1FieldData, address2FieldData, address3FieldData, gstFieldData, cntPersonFieldData, phoneNoFieldData, emailFieldData, destinationFieldData);
+                	JOptionPane.showMessageDialog(null, "Party Updated Successfully","Success",JOptionPane.INFORMATION_MESSAGE);
+                	dropdown.setSelectedIndex(0);
+                } catch (ClassNotFoundException | SQLException e1) {
+					e1.printStackTrace();
+				}
+            }    
+        });
         this.add(updatePartyButton);
 
         deletePartyButton = new JButton("Delete Party");
@@ -162,7 +207,10 @@ public class UpdatePartyPanel extends JPanel {
         gstField.setEnabled(enable);
         cntPersonField.setEnabled(enable);
         phoneNoField.setEnabled(enable);
+        emailField.setEnabled(enable);
         destinationField.setEnabled(enable);
+        updatePartyButton.setEnabled(enable);
+        deletePartyButton.setEnabled(enable);
     }
 
     // Reset text fields and disable them
@@ -173,6 +221,7 @@ public class UpdatePartyPanel extends JPanel {
         gstField.setText("");
         cntPersonField.setText("");
         phoneNoField.setText("");
+        emailField.setText("");
         destinationField.setText("");
         enableTextFields(false);
     }

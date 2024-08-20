@@ -191,7 +191,24 @@ public class Processes {
     public static String getDestination(String Name) throws ClassNotFoundException, SQLException {
         return getDetail("Destination", Name);
     }
-
+    public static void updateParty(String name, String address1FieldData, String address2FieldData,String address3FieldData, String gstFieldData, String cntPersonFieldData, String phoneNoFieldData,String emailFieldData, String destinationFieldData) throws ClassNotFoundException, SQLException {
+    	Connection c = getConnection();
+    	String sql = "UPDATE partydetails SET Address1 = '"+ address1FieldData +"', Address2= '"+ address2FieldData +"', Address3= '"+ address3FieldData +"', GST= '"+ gstFieldData +"', CntPerson= '"+ cntPersonFieldData +"', PhoneNo= '"+ phoneNoFieldData +"', Email= '"+ emailFieldData +"', Destination= '"+ destinationFieldData +"' WHERE Name= '"+ name +"';";
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
+    }
+    public static void delateParty(String Name) throws ClassNotFoundException, SQLException {
+    	Connection c = getConnection();
+    	String sql = "DELETE FROM  partydetails WHERE Name= '"+ Name +"';";
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
+    }
+    public static void addParty(String Name, String Address1, String Address2, String Address3, String GST, String CntPerson, int PhoneNo, String Email, String Destination) throws ClassNotFoundException, SQLException {
+    	Connection c = getConnection();
+    	String sql = "INSERT INTO partydetails VALUES('"+ Name +"','"+Address1+"','"+Address2+"','"+Address3+"','"+GST+"','"+CntPerson+"','"+PhoneNo+"','"+Email+"','"+Destination+"');";
+        Statement s = c.createStatement();
+        s.executeUpdate(sql);
+    }
 	public static void removeBill(int billNo) throws ClassNotFoundException, SQLException {
 		Connection c = getConnection();
 		String sql = "DELETE FROM itemstable WHERE BillNo=?";
