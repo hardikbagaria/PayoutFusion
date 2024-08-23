@@ -23,7 +23,7 @@ import com.itextpdf.layout.properties.VerticalAlignment;
 import database.Processes;
 import extras.NumberToWordsConverter;
 
-public class BillGenIGST {
+public class BillGenGSTD {
     public static PdfFont boldFont;
     public static PdfFont courier;
 
@@ -84,7 +84,7 @@ public class BillGenIGST {
     public static void createBill(String BillNo) throws FileNotFoundException, ClassNotFoundException, SQLException {
     	int prasedInt = Integer.parseInt(BillNo);
     	String name = Processes.getName(prasedInt);
-    	String dest = BillNo + " " + name + ".pdf";
+    	String dest = BillNo + " " + name + "(duplicate).pdf";
     	String date = Processes.getDate(prasedInt);
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdf = new PdfDocument(writer);
@@ -109,7 +109,7 @@ public class BillGenIGST {
         headerTable.setWidth(UnitValue.createPercentValue(100)); // Ensures table stretches to page width
         headerTable.setFixedLayout();
         headerTable.addCell(createCell(1, 9, true, "TAX INVOICE", 11.3f, true, true, true, true, false, TextAlignment.CENTER));
-        headerTable.addCell(createCell(1, 1, false, "ORIGINAL", 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
+        headerTable.addCell(createCell(1, 1, false, "DUPLICATE", 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
         // Company details
         headerTable.addCell(createCell(1, 6,true, "SURAJ ENTERPRISES", 11.3f, true, true, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Invoice No:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
@@ -137,7 +137,7 @@ public class BillGenIGST {
 
         // Buyer details
         headerTable.addCell(createCell(1, 2,true, "Buyer: M/s.", 11.3f, false, false, false, true, true, TextAlignment.LEFT));
-        headerTable.addCell(createCell(1, 4,true, name, 11.3f, false, false, false, false, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 4,true, name ,11.3f, false, false, false, false, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Buyer's Order No:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,true, "Dated:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
 
@@ -178,7 +178,6 @@ public class BillGenIGST {
         headerTable.addCell(createCell(2, 1,  true, "PER", 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(2, 1,  true, "AMOUNT", 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  true, "NO", 10f, true, false, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        
         int rows = 0;
         ResultSet rs = Processes.resultSet(prasedInt);
         while(rs.next()) {
@@ -205,8 +204,7 @@ public class BillGenIGST {
             headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
             rows += 2;
         }
-        
-        for (int i = rows; i < 12; i++) {
+        for (int i = rows; i < 11; i++) {
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 4,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1, false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
@@ -221,15 +219,24 @@ public class BillGenIGST {
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 1, false, Processes.getTotalValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1, false, Processes.getTotalValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        String gst = Processes.getGSTValue(prasedInt);
+        String dividedgst = String.valueOf( Double.parseDouble(gst)/2);
+        headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 4,  false, "CGST@9%", 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, dividedgst, 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 4,  false, "IGST@18%", 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 4,  false, "SGST@9%", 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 1,  false, Processes.getGSTValue(prasedInt), 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, dividedgst, 11.3f, true, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 4,  false, "transportation", 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
@@ -237,7 +244,7 @@ public class BillGenIGST {
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 1, false, Processes.getTValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1, false, Processes.getTValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, true, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 4,  false, "TOTAL", 11.3f, true, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
@@ -245,7 +252,7 @@ public class BillGenIGST {
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, true, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, true, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "", 11.3f, true, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 1,  false, Processes.getGrandTotalValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  false, Processes.getGrandTotalValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         
         headerTable.addCell(createCell(1, 9,  true, "AMOUNT CHARGEABLE (IN WORDS) :", 11.3f, false, false, false, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  false, "E. &O.E", 11.3f, false, false, true, false, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
@@ -253,25 +260,29 @@ public class BillGenIGST {
         headerTable.addCell(createCell(1, 10,  true, NumberToWordsConverter.convert((int) Math.round(Double.parseDouble(Processes.getGrandTotalValue(prasedInt)))), 11.3f, true, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(2, 3,  true, "HSN/SAC", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(2, 2,  true, "TAXABLE VALUE", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 4,  true, "IGST", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 2,  true, "CGST", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 2,  true, "SGST", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  true, "TOTAL", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
 
         
-        headerTable.addCell(createCell(1, 2, true, "RATE", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 2,  true, "AMOUNT", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1, true, "RATE", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, "AMOUNT", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1, true, "RATE", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, "AMOUNT", 9.5f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 1,  true, "TAX AMOUNT", 10f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
 
         headerTable.addCell(createCell(1, 3,  true, "271019", 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 2,  true, Processes.getTotalValue(prasedInt), 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
 
-        headerTable.addCell(createCell(1, 2,  true, "18%", 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(1, 2,  true, Processes.getGSTValue(prasedInt), 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, "9%", 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, dividedgst, 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, "9%", 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, dividedgst, 10f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
 
-        headerTable.addCell(createCell(1, 1,  true, Processes.getGSTValue(prasedInt), 11.3f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 1,  true, gst, 11.3f, true, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 7,  false, "TAX AMOUNT (IN WORDS) :", 11.3f, false, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 3,  true, "EMAIL: hbagaria2007@gmail.com", 11.3f, false, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        
-        headerTable.addCell(createCell(1, 7,  true, NumberToWordsConverter.convert((int) Math.round(Double.parseDouble(Processes.getGSTValue(prasedInt)))), 11.3f, true, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        headerTable.addCell(createCell(1, 7,  false, NumberToWordsConverter.convert((int) Math.round(Double.parseDouble(gst))), 11.3f, true, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(6, 3,  true, "", 11.3f, true, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         
         headerTable.addCell(createCell(1, 7,  true, "BANK DETAILS", 11.3f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE).setUnderline());

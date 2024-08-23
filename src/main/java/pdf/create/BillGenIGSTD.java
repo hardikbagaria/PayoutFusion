@@ -23,7 +23,7 @@ import com.itextpdf.layout.properties.VerticalAlignment;
 import database.Processes;
 import extras.NumberToWordsConverter;
 
-public class BillGenIGST {
+public class BillGenIGSTD {
     public static PdfFont boldFont;
     public static PdfFont courier;
 
@@ -109,7 +109,7 @@ public class BillGenIGST {
         headerTable.setWidth(UnitValue.createPercentValue(100)); // Ensures table stretches to page width
         headerTable.setFixedLayout();
         headerTable.addCell(createCell(1, 9, true, "TAX INVOICE", 11.3f, true, true, true, true, false, TextAlignment.CENTER));
-        headerTable.addCell(createCell(1, 1, false, "ORIGINAL", 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
+        headerTable.addCell(createCell(1, 1, false, "DUPLICATE", 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
         // Company details
         headerTable.addCell(createCell(1, 6,true, "SURAJ ENTERPRISES", 11.3f, true, true, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Invoice No:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));

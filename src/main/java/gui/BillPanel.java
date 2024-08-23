@@ -33,8 +33,14 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import database.Processes;
 import extras.NumberOnlyTextField;
+import pdf.create.BillGenGST;
+import pdf.create.BillGenGSTD;
+import pdf.create.BillGenIGST;
+import pdf.create.BillGenIGSTD;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
 public class BillPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private DefaultTableModel tableModel;
@@ -383,6 +389,7 @@ public class BillPanel extends JPanel {
 	                        "Bill created successfully!", 
 	                        "Success", 
 	                        JOptionPane.INFORMATION_MESSAGE);
+	                String gstno =Processes.getGST(selectedItem);
 	                model.setRowCount(0);
 	                dropdown.setSelectedIndex(0);
 	                datePicker.setDate(null);
@@ -390,6 +397,13 @@ public class BillPanel extends JPanel {
 	                BillNumberLabel.setText(String.valueOf(billNo));
 	                transportationField.setText("0");
 	                VField.setText(null);
+	                if ("27".equals(gstno.substring(0, 2))) {
+		            	BillGenGSTD.createBill(String.valueOf(Bno));
+		            	BillGenGST.createBill(String.valueOf(Bno));
+	                } else {
+		            	BillGenIGSTD.createBill(String.valueOf(Bno));
+		            	BillGenIGST.createBill(String.valueOf(Bno));
+	                }
 	            } catch (ClassNotFoundException | SQLException ex) {
 	                ex.printStackTrace();
 	                JOptionPane.showMessageDialog(null, 
@@ -401,7 +415,10 @@ public class BillPanel extends JPanel {
 	                        "Please ensure all numerical fields are correctly filled.", 
 	                        "Error", 
 	                        JOptionPane.ERROR_MESSAGE);
-	            }
+	            } catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 	        }
     });
     add(createBillButton);
