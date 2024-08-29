@@ -34,13 +34,11 @@ import com.github.lgooddatepicker.components.DatePickerSettings;
 import database.Processes;
 import extras.NumberOnlyTextField;
 import pdf.create.BillGenGST;
-import pdf.create.BillGenGSTD;
 import pdf.create.BillGenIGST;
-import pdf.create.BillGenIGSTD;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 public class BillPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private DefaultTableModel tableModel;
@@ -385,11 +383,20 @@ public class BillPanel extends JPanel {
 	                    Transportation = Double.parseDouble(transportationField.getText());
 	                }
 	                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
+	                String gstno =Processes.getGST(selectedItem);
+	                if ("27".equals(gstno.substring(0, 2))) {
+		            	BillGenGST billGenGST = new BillGenGST();
+						billGenGST.createBill(String.valueOf(Bno),false);
+						billGenGST.createBill(String.valueOf(Bno),true);
+	                } else {
+		            	BillGenIGST billGenIGST = new BillGenIGST();
+						billGenIGST.createBill(String.valueOf(Bno),false);
+						billGenIGST.createBill(String.valueOf(Bno),true);
+	                }
 	                JOptionPane.showMessageDialog(null, 
 	                        "Bill created successfully!", 
 	                        "Success", 
 	                        JOptionPane.INFORMATION_MESSAGE);
-	                String gstno =Processes.getGST(selectedItem);
 	                model.setRowCount(0);
 	                dropdown.setSelectedIndex(0);
 	                datePicker.setDate(null);
@@ -397,13 +404,6 @@ public class BillPanel extends JPanel {
 	                BillNumberLabel.setText(String.valueOf(billNo));
 	                transportationField.setText("0");
 	                VField.setText(null);
-	                if ("27".equals(gstno.substring(0, 2))) {
-		            	BillGenGSTD.createBill(String.valueOf(Bno));
-		            	BillGenGST.createBill(String.valueOf(Bno));
-	                } else {
-		            	BillGenIGSTD.createBill(String.valueOf(Bno));
-		            	BillGenIGST.createBill(String.valueOf(Bno));
-	                }
 	            } catch (ClassNotFoundException | SQLException ex) {
 	                ex.printStackTrace();
 	                JOptionPane.showMessageDialog(null, 
@@ -416,6 +416,9 @@ public class BillPanel extends JPanel {
 	                        "Error", 
 	                        JOptionPane.ERROR_MESSAGE);
 	            } catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}

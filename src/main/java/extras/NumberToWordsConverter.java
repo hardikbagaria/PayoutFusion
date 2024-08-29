@@ -10,7 +10,7 @@ public class NumberToWordsConverter {
 
     public static String numberToWords(int num) {
         if (num == 0) return "Zero";
-        return convert(num).trim();
+        return convert(num).trim() + " ONLY";
     }
 
     public static String convert(int num) {
@@ -28,10 +28,4 @@ public class NumberToWordsConverter {
             return convert(num / 10000000) + " Crore" + (num % 10000000 > 0 ? " " + convert(num % 10000000) : "");
         }
     }
-
-    public static void main(String[] args) {
-        int amount = 49202;
-        System.out.println(numberToWords(amount));  // Output: One Crore Twenty Two Lakh Forty Five Thousand Six Hundred and Seventy Eight
-    }
 }
-

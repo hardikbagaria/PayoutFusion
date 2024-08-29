@@ -40,6 +40,20 @@ public class Processes {
         c.close();
         return stringList;
     }
+    public static ArrayList<String> BillParty() throws ClassNotFoundException, SQLException {
+        ArrayList<String> stringList = new ArrayList<>();
+        Connection c = getConnection();
+        String sql = "SELECT BillNo,PartyName FROM billstable;";
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery(sql);
+        while (rs.next()) {
+            stringList.add(rs.getString("BillNo") +" "+rs.getString("PartyName"));
+        }
+        rs.close();
+        s.close();
+        c.close();
+        return stringList;
+    }
 
     public static ArrayList<String> Items() throws ClassNotFoundException, SQLException {
         ArrayList<String> stringList = new ArrayList<>();

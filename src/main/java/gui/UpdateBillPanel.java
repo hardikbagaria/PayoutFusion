@@ -10,6 +10,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -33,8 +35,10 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 
 import database.Processes;
+import extras.FileDeleter;
 import extras.NumberOnlyTextField;
-
+import pdf.create.BillGenGST;
+import pdf.create.BillGenIGST;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -337,7 +341,7 @@ public class UpdateBillPanel extends JPanel {
 		                        PhoneNoL.setText(Processes.getPhoneNo(name1));
 		                        DestinationL.setText(Processes.getDestination(name1));
 							}
-	                        transportationField.setText(Processes.getTDetails(selectedItem));
+							transportationField.setText(Processes.getTValue(selectedItem));
 	                        // Add row to table
 	                        ResultSet rs = Processes.resultSet(selectedItem);
 	                        while (rs.next()) {
@@ -447,6 +451,7 @@ public class UpdateBillPanel extends JPanel {
                 // Proceed with the normal processing if no errors
                 try {
                 	int Bno = Integer.parseInt(comboBox.getSelectedItem().toString());
+                	FileDeleter.deleteFile(Bno);
                 	Processes.removeBill(Bno);
                     for (int row = 0; row < model.getRowCount(); row++) {
                         int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
@@ -463,7 +468,16 @@ public class UpdateBillPanel extends JPanel {
                     Double Total = Double.parseDouble(grandTotalField.getText());
                     Double Transportation = Double.parseDouble(transportationField.getText());
                     Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
-
+                    String gstno =Processes.getGST(selectedItem);
+	                if ("27".equals(gstno.substring(0, 2))) {
+		            	BillGenGST billGenGST = new BillGenGST();
+						billGenGST.createBill(String.valueOf(Bno),false);
+						billGenGST.createBill(String.valueOf(Bno),true);
+	                } else {
+		            	BillGenIGST billGenIGST = new BillGenIGST();
+						billGenIGST.createBill(String.valueOf(Bno),false);
+						billGenIGST.createBill(String.valueOf(Bno),true);
+	                }
                     JOptionPane.showMessageDialog(null, 
                             "Bill Updated successfully!", 
                             "Success", 
@@ -486,7 +500,12 @@ public class UpdateBillPanel extends JPanel {
                             "Please ensure all numerical fields are correctly filled.", 
                             "Error", 
                             JOptionPane.ERROR_MESSAGE);
-                }
+                } catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             }
         });        
         JButton delateButton = new JButton("Delate");
@@ -520,6 +539,7 @@ public class UpdateBillPanel extends JPanel {
                 if (result == JOptionPane.YES_OPTION) {
                 	int Bno = Integer.parseInt(comboBox.getSelectedItem().toString());
                     try {
+						FileDeleter.deleteFile(Bno);
 						Processes.removeBill(Bno);
 					} catch (ClassNotFoundException | SQLException e1) {
 						e1.printStackTrace();

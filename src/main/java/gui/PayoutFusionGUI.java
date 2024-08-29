@@ -79,7 +79,7 @@ public class PayoutFusionGUI {
 
         // Define buttons and their corresponding panels
         String[] buttonNames = {
-            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print Bills", "View Bills", "View Ledger", "View Payments"
+            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "View Payments"
         };
         for (String buttonName : buttonNames) {
             JButton button = createStyledButton(buttonName);
@@ -133,11 +133,8 @@ public class PayoutFusionGUI {
             case "Update Party":
                 newPanel = new UpdatePartyPanel(); // Load UpdatePartyPanel class
                 break;
-            case "Print Bills":
+            case "Print & Send Bills":
             	newPanel = new PrintBillsPanel();
-            	break;
-            case "View Bills":
-            	newPanel = new ViewBillsPanel();
             	break;
             case "View Ledger":
             	newPanel = new ViewLedgerPanel();
@@ -198,7 +195,7 @@ public class PayoutFusionGUI {
     }
 
     // Custom button UI for the sidebar buttons
-    private static class StyledButtonUI extends BasicButtonUI {
+    public static class StyledButtonUI extends BasicButtonUI {
         @Override
         public void installUI(JComponent c) {
             super.installUI(c);

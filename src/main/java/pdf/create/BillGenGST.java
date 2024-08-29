@@ -1,12 +1,11 @@
 package pdf.create;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -21,30 +20,19 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 
 import database.Processes;
+import extras.MakePaymentCell;
 import extras.NumberToWordsConverter;
 
 public class BillGenGST {
-    public static PdfFont boldFont;
-    public static PdfFont courier;
-
-    static {
-        try {
-            boldFont = PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
-            courier = PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Handle the exception (e.g., log the error, use a default font, etc.)
-        }
-    }
-    private static Cell createCell(int rowspan, int colspan, boolean isBold, String text, float fontSize, boolean borderBottom, boolean borderTop, boolean borderRight, boolean borderLeft, boolean border, TextAlignment alignment) {
+    private Cell createCell(int rowspan, int colspan, boolean isBold, String text, float fontSize, boolean borderBottom, boolean borderTop, boolean borderRight, boolean borderLeft, boolean border, TextAlignment alignment) throws IOException {
         Cell cell = new Cell(rowspan, colspan).setHeight(14.44f).add(new Paragraph(text).setFontSize(fontSize).setTextAlignment(alignment));
-        cell.setFont(courier);
+        cell.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
         cell.setPaddingTop(0.1f);    // Reduce top padding
         cell.setPaddingBottom(0.1f); // Reduce bottom padding
         cell.setMarginTop(0.1f);     // Remove top margin
         cell.setMarginBottom(0.1f);
         if (isBold) {
-            cell.setFont(boldFont);
+            cell.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_BOLD));
         }
         if (!border) {
             cell.setBorder(null);
@@ -77,39 +65,47 @@ public class BillGenGST {
         }
         return cell;
     }
-    static float cmToPoints(float cm) {
-        return cm * 72 / 2.54f;
-    }
 
-    public static void createBill(String BillNo) throws FileNotFoundException, ClassNotFoundException, SQLException {
+
+    public void createBill(String BillNo,Boolean isDupli) throws ClassNotFoundException, SQLException, IOException {
+        String title = "";
     	int prasedInt = Integer.parseInt(BillNo);
     	String name = Processes.getName(prasedInt);
-    	String dest = BillNo + " " + name + ".pdf";
+    	String dest1 = BillNo + " " + name;
+    	String dest = "";
+    	if(isDupli) {
+        	title = "DUPLICATE";
+        	dest = dest1 + "(duplicate).pdf";
+        }
+        else {
+        	title = "ORIGINAL";
+        	dest = dest1 + ".pdf";
+        }
     	String date = Processes.getDate(prasedInt);
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
         // Set margins back to your specified values
-        document.setMargins(cmToPoints(0.5f), cmToPoints(0.661f), 0, cmToPoints(0.561f)); // Left, Right, Top, Bottom
+    	try {
+        document.setMargins(14.173f, 18.737f, 0, 15.902f); // Left, Right, Top, Bottom
         float[] columnWidths = new float[] {
-        		cmToPoints(0.85f), // First column
-        		cmToPoints(1.58f), // Second column
-        		cmToPoints(2.45f), // Third column
-        		cmToPoints(1.55f), // Fourth column
-        		cmToPoints(2.1f),  // Fifth column
-        		cmToPoints(1.85f), // Sixth column
-        		cmToPoints(2.2f),  // Seventh column
-        		cmToPoints(1.89f), // Eighth column
-        		cmToPoints(1.8f),  // Ninth column
-        		cmToPoints(3.4f)   // Tenth column
+        		24.094488f,
+        		44.787403f,
+        		69.44882f,
+        		43.937008f,
+        		59.527557f,
+        		52.440945f,
+        		62.36221f,
+        		53.574806f,
+        		51.02362f,
+        		96.37795f
         };
-        
         // Create the table with the specified column widths
         Table headerTable = new Table(columnWidths);
         headerTable.setWidth(UnitValue.createPercentValue(100)); // Ensures table stretches to page width
         headerTable.setFixedLayout();
         headerTable.addCell(createCell(1, 9, true, "TAX INVOICE", 11.3f, true, true, true, true, false, TextAlignment.CENTER));
-        headerTable.addCell(createCell(1, 1, false, "ORIGINAL", 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
+        headerTable.addCell(createCell(1, 1, false, title, 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
         // Company details
         headerTable.addCell(createCell(1, 6,true, "SURAJ ENTERPRISES", 11.3f, true, true, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Invoice No:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
@@ -283,7 +279,8 @@ public class BillGenGST {
         headerTable.addCell(createCell(1, 7,  false, "TAX AMOUNT (IN WORDS) :", 11.3f, false, true, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 3,  true, "EMAIL: hbagaria2007@gmail.com", 11.3f, false, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
         headerTable.addCell(createCell(1, 7,  false, NumberToWordsConverter.convert((int) Math.round(Double.parseDouble(gst))), 11.3f, true, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-        headerTable.addCell(createCell(6, 3,  true, "", 11.3f, true, true, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+        MakePaymentCell mpc = new MakePaymentCell(Processes.getGrandTotalValue(prasedInt), dest1);
+        headerTable.addCell(mpc);
         
         headerTable.addCell(createCell(1, 7,  true, "BANK DETAILS", 11.3f, false, true, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE).setUnderline());
 
@@ -315,7 +312,10 @@ public class BillGenGST {
                 .setTextAlignment(TextAlignment.CENTER)
                 .setFontSize(8);
         document.add(footer);
-
-        document.close();
+    	}
+    	finally {
+	    	pdf.close();
+	        document.close();
+    	}
     }
 }
