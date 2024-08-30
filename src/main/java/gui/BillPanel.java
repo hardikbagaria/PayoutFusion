@@ -364,11 +364,13 @@ public class BillPanel extends JPanel {
 	
 	            // Proceed with the normal processing if no errors
 	            try {
+                	Double totalquantity = 0.0;
 	            	int Bno = Integer.parseInt(BillNumberLabel.getText());
 	                for (int row = 0; row < model.getRowCount(); row++) {
 	                    int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
 	                    String itemName = model.getValueAt(row, 1).toString();
 	                    double quantity = Double.parseDouble(model.getValueAt(row, 2).toString());
+                        totalquantity += quantity;
 	                    double rate = Double.parseDouble(model.getValueAt(row, 3).toString());
 	                    double amount = Double.parseDouble(model.getValueAt(row, 4).toString());
 	                    Processes.createBill(Bno, srNo, itemName, quantity, rate, amount);
@@ -382,7 +384,7 @@ public class BillPanel extends JPanel {
 	                if (!transportationField.getText().isEmpty()) {
 	                    Transportation = Double.parseDouble(transportationField.getText());
 	                }
-	                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
+	                Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total,totalquantity);
 	                String gstno =Processes.getGST(selectedItem);
 	                if ("27".equals(gstno.substring(0, 2))) {
 		            	BillGenGST billGenGST = new BillGenGST();

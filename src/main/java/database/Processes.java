@@ -113,6 +113,9 @@ public class Processes {
     public static String getGrandTotalValue(int BillNo) throws ClassNotFoundException, SQLException {
     	return getDetailByBillNo("grandTotal", BillNo);
     }
+    public static String getTotalQuantity(int BillNo) throws ClassNotFoundException, SQLException {
+    	return getDetailByBillNo("totalQuantity", BillNo);
+    }
 
     private static String getDetailByBillNo(String detail, int BillNo) throws ClassNotFoundException, SQLException {
         String result = null;
@@ -161,9 +164,9 @@ public class Processes {
         c.close();
     }
 
-    public static void cBill(int billNo, String pName, String date, String vehicleDetails, Double TotalValue, Double GST, Double Transportation, Double GrandTotal) throws ClassNotFoundException, SQLException {
+    public static void cBill(int billNo, String pName, String date, String vehicleDetails, Double TotalValue, Double GST, Double Transportation, Double GrandTotal,Double totalQuantity) throws ClassNotFoundException, SQLException {
         Connection c = getConnection();
-        String sql = "INSERT INTO billstable(BillNo, PartyName, Date, VehicleDetails, TotalValue, gst, Transportation, grandTotal) VALUES(?,?,?,?,?,?,?,?);";
+        String sql = "INSERT INTO billstable(BillNo, PartyName, Date, VehicleDetails, TotalValue, gst, Transportation, grandTotal,totalQuantity) VALUES(?,?,?,?,?,?,?,?,?);";
         PreparedStatement ps = c.prepareStatement(sql);
         ps.setInt(1, billNo);
         ps.setString(2, pName);
@@ -173,6 +176,7 @@ public class Processes {
         ps.setDouble(6, GST);
         ps.setDouble(7, Transportation);
         ps.setDouble(8, GrandTotal);
+        ps.setDouble(9, totalQuantity);
         ps.executeUpdate();
         ps.close();
         c.close();
@@ -246,5 +250,18 @@ public class Processes {
         ps1.setInt(1, billNo);
         ps1.executeUpdate();
 	}
+	public static ResultSet viewLedger(String name, String fromdate, String todate) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    String sql = "SELECT BillNo, Date, totalQuantity, TotalValue, gst, Transportation, grandTotal " +
+	                 "FROM payoutfusion.billstable " +
+	                 "WHERE STR_TO_DATE(Date, '%d/%m/%Y') BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y') " +
+	                 "AND PartyName = ?;";
+	    PreparedStatement ps = c.prepareStatement(sql);
+	    ps.setString(1, fromdate);
+	    ps.setString(2, todate);
+	    ps.setString(3, name);
+	    return ps.executeQuery();
+	}
+
 	
 }

@@ -102,18 +102,18 @@ public class UpdateBillPanel extends JPanel {
         PartyName.insertItemAt(defaultValueP, 0);
         PartyName.setSelectedIndex(0);
         PartyName.setFont(new Font("Arial", Font.PLAIN, 14));
-        PartyName.setBounds(489, 50, 150, 30);
+        PartyName.setBounds(489, 50, 200, 30);
         PartyName.setEnabled(false);
         this.add(PartyName);
         
         //Vehicle details
         JLabel VLabel = new JLabel("Vehicle Details:");
         VLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        VLabel.setBounds(673, 51, VLabel.getPreferredSize().width, 26);
+        VLabel.setBounds(699, 51, VLabel.getPreferredSize().width, 26);
         add(VLabel);
         
         JTextField VField = new JTextField(null);
-        VField.setBounds(780, 50, 100, 30);
+        VField.setBounds(806, 50, 100, 30);
         add(VField);
         
         
@@ -453,10 +453,12 @@ public class UpdateBillPanel extends JPanel {
                 	int Bno = Integer.parseInt(comboBox.getSelectedItem().toString());
                 	FileDeleter.deleteFile(Bno);
                 	Processes.removeBill(Bno);
+                	Double totalquantity = 0.0;
                     for (int row = 0; row < model.getRowCount(); row++) {
                         int srNo = Integer.parseInt(model.getValueAt(row, 0).toString());
                         String itemName = model.getValueAt(row, 1).toString();
                         double quantity = Double.parseDouble(model.getValueAt(row, 2).toString());
+                        totalquantity += quantity;
                         double rate = Double.parseDouble(model.getValueAt(row, 3).toString());
                         double amount = Double.parseDouble(model.getValueAt(row, 4).toString());
                         Processes.createBill(Bno, srNo, itemName, quantity, rate, amount);
@@ -467,7 +469,7 @@ public class UpdateBillPanel extends JPanel {
                     Double gst = Double.parseDouble(gstField.getText());
                     Double Total = Double.parseDouble(grandTotalField.getText());
                     Double Transportation = Double.parseDouble(transportationField.getText());
-                    Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total);
+                    Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total, totalquantity);
                     String gstno =Processes.getGST(selectedItem);
 	                if ("27".equals(gstno.substring(0, 2))) {
 		            	BillGenGST billGenGST = new BillGenGST();
