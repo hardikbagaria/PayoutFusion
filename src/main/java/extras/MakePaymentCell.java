@@ -22,9 +22,8 @@ public class MakePaymentCell extends Cell {
     public MakePaymentCell(String amount, String transactionNote) {
         super(6, 3); // Set rowspan and colspan
 
-        String upiId = "hardikbagaria0-3@oksbi";
+        String upiId = "hbagaria2007-1@okicici";
         String name = "Hardik Bagaria";
-
         try {
             // Create UPI URL
             String upiUrl = "upi://pay?pa=" + upiId + "&pn=" + name + "&am=" + amount + "&tn=" + transactionNote;
@@ -51,14 +50,12 @@ public class MakePaymentCell extends Cell {
             img.scaleToFit(100, 100); // Adjust these values as needed
 
             // Set cell properties
-            this.setHeight(100f) // Set a height that matches or exceeds the image size
-                .setPadding(0) // Remove padding to make image larger
-                .setMargin(0)  // Remove margins to make image larger
+            this.setHeight(100f)
+                .setPadding(0)
+                .setMargin(0)
                 .setBorder(new SolidBorder(ColorConstants.BLACK, 2f))
-                .setVerticalAlignment(VerticalAlignment.MIDDLE) // Center vertically
-                .setHorizontalAlignment(HorizontalAlignment.CENTER); // Center horizontally
-
-            // Add the image to the cell
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .setHorizontalAlignment(HorizontalAlignment.CENTER);
             this.add(img);
 
         } catch (Exception e) {

@@ -9,16 +9,23 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -27,22 +34,33 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
+import java.awt.Toolkit;
 
 public class PayoutFusionGUI {
     private static JButton lastSelectedButton = null;
     private static Map<String, JPanel> panelsMap = new HashMap<>();
     private static JPanel contentArea;
-
+    private static ImageIcon icon;
     public static void main(String[] args) {
         // Create the frame
         JFrame frame = new JFrame("Payout Fusion");
         frame.setSize(1280, 720);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-
+        // Load the image
+        BufferedImage originalImage = null;
+        try {
+            originalImage = ImageIO.read(new File("C:\\tlogo2.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Image resizedImage = originalImage.getScaledInstance(64,64, Image.SCALE_SMOOTH);
+        // Convert the resized image to an ImageIcon
+        icon = new ImageIcon(resizedImage);
+        // Set the icon image
+        frame.setIconImage(icon.getImage());
         // Create the main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
-
         // Sidebar setup
         JPanel sidebar = createSidebar();
         
@@ -60,7 +78,7 @@ public class PayoutFusionGUI {
         mainPanel.add(contentArea, BorderLayout.CENTER);
 
         // Finalize frame setup
-        frame.add(mainPanel);
+        frame.getContentPane().add(mainPanel);
         frame.setVisible(true);
     }
 
@@ -70,7 +88,7 @@ public class PayoutFusionGUI {
         sidebar.setBackground(new Color(66, 66, 68));
         sidebar.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JLabel logoLabel = new JLabel("Payout Fusion", SwingConstants.CENTER);
+        JLabel logoLabel = new JLabel(icon);
         logoLabel.setForeground(Color.WHITE);
         logoLabel.setFont(new Font("Arial", Font.BOLD, 24));
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -92,7 +110,6 @@ public class PayoutFusionGUI {
                     try {
 						handlePanelLoading(buttonName, button);
 					} catch (ClassNotFoundException | SQLException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
                 }
