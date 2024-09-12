@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -28,7 +27,9 @@ import database.Processes;
 import javax.swing.JButton;
 
 public class ViewLedgerPanel extends JPanel {
-
+	private String name;
+	private LocalDate fromdate,todate;
+	private final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final long serialVersionUID = 1L;
 
     /**
@@ -74,7 +75,6 @@ public class ViewLedgerPanel extends JPanel {
         fromdateLabel.setBounds(317, 50, fromdateLabel.getPreferredSize().width, 30);
         this.add(fromdateLabel);
         DatePickerSettings dateSettings = new DatePickerSettings();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         dateSettings.setFormatForDatesCommonEra(format);
         DatePicker fromdatePicker = new DatePicker(dateSettings);
         fromdatePicker.setBounds(390, 50, fromdatePicker.getPreferredSize().width, 30);
@@ -93,11 +93,6 @@ public class ViewLedgerPanel extends JPanel {
         todatePicker.setDate(LocalDate.now());
         this.add(todatePicker);
         
-        // Get Ledger Button
-        JButton btnNewButton = new JButton("Get Ledger");
-        btnNewButton.setBounds(752, 50, 100, 30);
-        this.add(btnNewButton);
-        
         // Table Setup
         String[] columnNames = {"BillNo", "Date", "totalQuantity", "TotalValue", "GST", "Transportation", "GrandTotal"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
@@ -113,14 +108,16 @@ public class ViewLedgerPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(20, 91, 1050, 578);
         this.add(scrollPane);
-
-        
+        // Get Ledger Button
+        JButton getLedgerButton = new JButton("Get Ledger");
+        getLedgerButton.setBounds(752, 50, 100, 30);
+        this.add(getLedgerButton);
         // Button Action Listener
-        btnNewButton.addActionListener(new ActionListener() {
+        getLedgerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String name = PartyName.getSelectedItem().toString();
-                LocalDate fromdate = fromdatePicker.getDate();
-                LocalDate todate = todatePicker.getDate();
+                name = PartyName.getSelectedItem().toString();
+                fromdate = fromdatePicker.getDate();
+                todate = todatePicker.getDate();
                 
                 StringBuilder errorMessages = new StringBuilder();
                 if ("--Select Party--".equals(name)) {
@@ -167,6 +164,16 @@ public class ViewLedgerPanel extends JPanel {
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
+        });
+        JButton printLedgerButton = new JButton("Print Ledger");
+        printLedgerButton.setBounds(862, 50, 100, 30);
+        add(printLedgerButton);
+        printLedgerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	String a = name;
+            	String from_date = fromdate.format(format);
+            	String to_date = todate.format(format);
+            }    
         });
     }
 }

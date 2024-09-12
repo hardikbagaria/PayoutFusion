@@ -52,9 +52,7 @@ public class PrintBillsPanel extends JPanel {
         
         JButton sendBillButton = new JButton("Send Bill");
         sendBillButton.setBounds(920, 629, 150, 40);
-        sendBillButton.setBackground(Color.GREEN);
-        sendBillButton.setForeground(Color.WHITE);
-        sendBillButton.setFont(new Font("Arial", Font.BOLD, 16));
+        sendBillButton.setFont(new Font("Arial", Font.PLAIN, 16));
         sendBillButton.setFocusPainted(false); // Remove focus outline
         this.add(sendBillButton);
         sendBillButton.addActionListener(new ActionListener() {
@@ -76,9 +74,7 @@ public class PrintBillsPanel extends JPanel {
         });
         JButton printBillButton = new JButton("Print Bill");
         printBillButton.setBounds(760, 629, 150, 40);
-        printBillButton.setBackground(Color.GREEN);
-        printBillButton.setForeground(Color.WHITE);
-        printBillButton.setFont(new Font("Arial", Font.BOLD, 16));
+        printBillButton.setFont(new Font("Arial", Font.PLAIN, 16));
         printBillButton.setFocusPainted(false); // Remove focus outline
         this.add(printBillButton);
         printBillButton.addActionListener(new ActionListener() {

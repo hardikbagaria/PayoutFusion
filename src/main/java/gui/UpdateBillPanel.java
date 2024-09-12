@@ -86,6 +86,7 @@ public class UpdateBillPanel extends JPanel {
         dateSettings.setFormatForDatesCommonEra(format);
         DatePicker datePicker = new DatePicker(dateSettings);
         datePicker.setBounds(257, 51, datePicker.getPreferredSize().width, 30);
+        datePicker.getComponentDateTextField().setEnabled(false);
         this.add(datePicker);
         
         // Party Name
@@ -412,9 +413,7 @@ public class UpdateBillPanel extends JPanel {
         // Creating Bill
         JButton updateBillButton = new JButton("Update Bill");
         updateBillButton.setBounds(920, 629, 150, 40);
-        updateBillButton.setBackground(Color.GREEN);
-        updateBillButton.setForeground(Color.WHITE);
-        updateBillButton.setFont(new Font("Arial", Font.BOLD, 16));
+        updateBillButton.setFont(new Font("Arial", Font.PLAIN, 16));
         updateBillButton.setFocusPainted(false); // Remove focus outline
         this.add(updateBillButton);
         updateBillButton.addActionListener(new ActionListener() {
@@ -512,9 +511,7 @@ public class UpdateBillPanel extends JPanel {
         });        
         JButton delateButton = new JButton("Delate");
         delateButton.setBounds(760, 629, 150, 40);
-        delateButton.setBackground(Color.RED);
-        delateButton.setForeground(Color.WHITE);
-        delateButton.setFont(new Font("Arial", Font.BOLD, 16));
+        delateButton.setFont(new Font("Arial", Font.PLAIN, 16));
         delateButton.setFocusPainted(false); // Remove focus outline
         this.add(delateButton);
         delateButton.addActionListener(new ActionListener() {

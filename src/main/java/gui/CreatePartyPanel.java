@@ -98,9 +98,7 @@ public class CreatePartyPanel extends JPanel {
         // Create Update Party and Delete Party buttons
         createPartyButton = new JButton("Create Party");
         createPartyButton.setBounds(920, 629, 150, 40);
-        createPartyButton.setBackground(Color.GREEN);
-        createPartyButton.setForeground(Color.WHITE);
-        createPartyButton.setFont(new Font("Arial", Font.BOLD, 16));
+        createPartyButton.setFont(new Font("Arial", Font.PLAIN, 16));
         createPartyButton.setFocusPainted(false); // Remove focus outline
         createPartyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -152,9 +150,7 @@ public class CreatePartyPanel extends JPanel {
             }    
         });
         clearButton.setBounds(760, 629, 150, 40);
-        clearButton.setBackground(Color.RED);
-        clearButton.setForeground(Color.WHITE);
-        clearButton.setFont(new Font("Arial", Font.BOLD, 16));
+        clearButton.setFont(new Font("Arial", Font.PLAIN, 16));
         clearButton.setFocusPainted(false); // Remove focus outline
         this.add(clearButton);
         }

@@ -69,6 +69,7 @@ public class BillPanel extends JPanel {
         dateSettings.setFormatForDatesCommonEra(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         DatePicker datePicker = new DatePicker(dateSettings);
         datePicker.setBounds(257, 51, datePicker.getPreferredSize().width, 30);
+        datePicker.getComponentDateTextField().setEnabled(false);
         datePicker.setDateToToday();
         this.add(datePicker);
         
@@ -327,9 +328,7 @@ public class BillPanel extends JPanel {
         // Creating Bill
         JButton createBillButton = new JButton("Create Bill");
         createBillButton.setBounds(920, 629, 150, 40);
-        createBillButton.setBackground(Color.GREEN);
-        createBillButton.setForeground(Color.WHITE);
-        createBillButton.setFont(new Font("Arial", Font.BOLD, 16));
+        createBillButton.setFont(new Font("Arial", Font.PLAIN, 16));
         createBillButton.setFocusPainted(false); // Remove focus outline
         createBillButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -429,9 +428,7 @@ public class BillPanel extends JPanel {
     add(createBillButton);
     JButton cancelButton = new JButton("Cancel");
     cancelButton.setBounds(760, 629, 150, 40);
-    cancelButton.setBackground(Color.RED);
-    cancelButton.setForeground(Color.WHITE);
-    cancelButton.setFont(new Font("Arial", Font.BOLD, 16));
+    cancelButton.setFont(new Font("Arial", Font.PLAIN, 16));
     cancelButton.setFocusPainted(false); // Remove focus outline
     this.add(cancelButton);
     cancelButton.addActionListener(new ActionListener() {

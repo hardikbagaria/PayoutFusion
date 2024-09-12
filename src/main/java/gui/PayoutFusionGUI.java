@@ -31,17 +31,24 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.Toolkit;
 
 public class PayoutFusionGUI {
+
     private static JButton lastSelectedButton = null;
     private static Map<String, JPanel> panelsMap = new HashMap<>();
     private static JPanel contentArea;
     private static ImageIcon icon;
     public static void main(String[] args) {
+    	try {
+    	    // Set the Look and Feel to the system's default (Windows in this case)
+    	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	}
+
         // Create the frame
         JFrame frame = new JFrame("Payout Fusion");
         frame.setSize(1280, 720);

@@ -262,6 +262,42 @@ public class Processes {
 	    ps.setString(3, name);
 	    return ps.executeQuery();
 	}
+	public int getHSN(String ItemName) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    String sql = "SELECT HSN FROM payoutfusion.items WHERE Item = ?;";
+	    PreparedStatement ps = c.prepareStatement(sql);
+	    ps.setString(1, ItemName);
+	    ResultSet rs = ps.executeQuery();
+	    
+	    int HSN = 0;
+	    if(rs.next()) {
+	        HSN = rs.getInt("HSN"); 
+	    }
+	    rs.close();
+	    ps.close();
+	    c.close();
+	    
+	    return HSN;
+	}
+
+	public String getPer(String ItemName) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    String sql = "SELECT per FROM payoutfusion.items WHERE Item = ?;";
+	    PreparedStatement ps = c.prepareStatement(sql);
+	    ps.setString(1, ItemName);
+	    ResultSet rs = ps.executeQuery();
+	    
+	    String per = "";
+	    if(rs.next()) {
+	        per = rs.getString("per");
+	    }
+	    rs.close();
+	    ps.close();
+	    c.close();
+	    
+	    return per;
+	}
+
 
 	
 }

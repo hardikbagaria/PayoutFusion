@@ -177,6 +177,7 @@ public class BillGenIGST {
         
         int rows = 0;
         ResultSet rs = Processes.resultSet(prasedInt);
+        Processes ps = new Processes();
         while(rs.next()) {
         	String SrNo = String.valueOf(rs.getInt("SrNo"));
             String itemName = rs.getString("ItemName");
@@ -185,10 +186,10 @@ public class BillGenIGST {
             String amount = String.valueOf(rs.getDouble("Amount"));
             headerTable.addCell(createCell(1, 1,  false, SrNo, 11.3f, false, false, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
             headerTable.addCell(createCell(1, 4,  false, itemName, 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-            headerTable.addCell(createCell(1, 1, false, "271019", 11.3f, false, false, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
+            headerTable.addCell(createCell(1, 1, false, String.valueOf(ps.getHSN(itemName)), 11.3f, false, false, true, true, true, TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
             headerTable.addCell(createCell(1, 1,  false, quantity, 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
             headerTable.addCell(createCell(1, 1,  false, rate, 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
-            headerTable.addCell(createCell(1, 1,  false, "ltr", 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
+            headerTable.addCell(createCell(1, 1,  false, ps.getPer(itemName), 11.3f, false, false, true, true, true, TextAlignment.LEFT).setVerticalAlignment(VerticalAlignment.MIDDLE));
             headerTable.addCell(createCell(1, 1,  false, amount, 11.3f, false, false, true, true, true, TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE));
 
             //spacing

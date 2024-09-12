@@ -133,9 +133,7 @@ public class UpdatePartyPanel extends JPanel {
         // Create Update Party and Delete Party buttons
         updatePartyButton = new JButton("Update Party");
         updatePartyButton.setBounds(920, 629, 150, 40);
-        updatePartyButton.setBackground(Color.GREEN);
-        updatePartyButton.setForeground(Color.WHITE);
-        updatePartyButton.setFont(new Font("Arial", Font.BOLD, 16));
+        updatePartyButton.setFont(new Font("Arial", Font.PLAIN, 16));
         updatePartyButton.setFocusPainted(false); // Remove focus outline
         updatePartyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -198,9 +196,7 @@ public class UpdatePartyPanel extends JPanel {
             }    
         });
         deletePartyButton.setBounds(760, 629, 150, 40);
-        deletePartyButton.setBackground(Color.RED);
-        deletePartyButton.setForeground(Color.WHITE);
-        deletePartyButton.setFont(new Font("Arial", Font.BOLD, 16));
+        deletePartyButton.setFont(new Font("Arial", Font.PLAIN, 16));
         deletePartyButton.setFocusPainted(false); // Remove focus outline
         this.add(deletePartyButton);
         resetFields(); // Disable text fields initially
