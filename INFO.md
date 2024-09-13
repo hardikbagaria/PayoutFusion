@@ -1,7 +1,4 @@
 ### Terms and Conditions for PayoutFusion
-
-**Effective Date:** [Insert Date]
-
 Welcome to PayoutFusion, a software solution provided by **HARDIK HITESH BAGARIA**. By accessing or using the services of PayoutFusion, you agree to comply with and be bound by the following terms and conditions. Please read them carefully as they govern your use of this website and the associated software.
 
 ---
