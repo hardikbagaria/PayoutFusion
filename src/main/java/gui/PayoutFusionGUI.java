@@ -57,7 +57,7 @@ public class PayoutFusionGUI {
         // Load the image
         BufferedImage originalImage = null;
         try {
-            originalImage = ImageIO.read(new File("C:\\tlogo2.png"));
+            originalImage = ImageIO.read(new File("C:\\Users\\hardik\\eclipse-workspace\\PayoutFusion\\src\\main\\java\\assets\\logo.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
