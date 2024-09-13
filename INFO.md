@@ -45,9 +45,9 @@ These terms and your use of PayoutFusion shall be governed by and construed in a
 For any questions regarding these terms or the services provided, please contact us at:
 
 - **Business Name**: HARDIK HITESH BAGARIA  
-- **Address**: [Insert Indian Operational Address]  
-- **Email**: [Insert Email Address]  
-- **Phone**: [Insert Contact Number]  
+- **Address**: E-12 Panchal Nagar Anand Nagar Vasai West 401202
+- **Email**: hardikbagaria0@gmail.com
+- **Phone**: 9967627909
 
 ---
 
