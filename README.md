@@ -174,7 +174,7 @@ If non-numeric values are attempted, the field blocks the input, providing a smo
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/payout-fusion.git
+   git clone https://github.com/hardikbagaria/payout-fusion.git
    cd payout-fusion
    ```
 
