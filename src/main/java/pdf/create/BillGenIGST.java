@@ -107,27 +107,27 @@ public class BillGenIGST {
         headerTable.addCell(createCell(1, 9, true, "TAX INVOICE", 11.3f, true, true, true, true, false, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 1, false, title, 11.3f, true, true, true, true, false, TextAlignment.RIGHT));
         // Company details
-        headerTable.addCell(createCell(1, 6,true, "SURAJ ENTERPRISES", 11.3f, true, true, true, true, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 6,true, "", 11.3f, true, true, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Invoice No:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,true, "Dated:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
 
-        headerTable.addCell(createCell(1, 6,false, "E-12 PANCHAL NAGAR CO-OP HSG. SOC.", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 6,false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,false, BillNo, 11.3f, false, false, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,false, date, 11.3f, false, false, true, true, true, TextAlignment.CENTER));
 
-        headerTable.addCell(createCell(1, 6,false, "ANAND NAGAR, OPP. K.T. VISION CINEMA,", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 6,false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Delivery Note:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,true, "Dated:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
 
-        headerTable.addCell(createCell(1, 6,false, "VASAI ROAD (W) DIST. PALGHAR 401202", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 6,false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,false, BillNo, 11.3f, false, false, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,false, date, 11.3f, false, false, true, true, true, TextAlignment.CENTER));
 
-        headerTable.addCell(createCell(1, 6,false, "GSTIN/UIN: 27AQHPB0072E1ZE", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 6,false, "", 11.3f, false, false, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,true, "Mode Of Payment:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,true, "Vehicle Details:", 11.3f, false, true, true, true, true, TextAlignment.CENTER));
 
-        headerTable.addCell(createCell(1, 6,false, "MOBILE NO. 9022180909", 11.3f, true, false, true, true, true, TextAlignment.LEFT));
+        headerTable.addCell(createCell(1, 6,false, "", 11.3f, true, false, true, true, true, TextAlignment.LEFT));
         headerTable.addCell(createCell(1, 2,false, "Immediate", 11.3f, false, false, true, true, true, TextAlignment.CENTER));
         headerTable.addCell(createCell(1, 2,false, Processes.getVDetails(prasedInt), 11.3f, false, false, true, true, true, TextAlignment.CENTER));
 

@@ -1,16 +1,15 @@
 package payments;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import org.json.JSONObject;
-import com.razorpay.Payment;
+
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 public class Main {
 	public static void main(String[] args) throws RazorpayException {
-		RazorpayClient razorpay = new RazorpayClient("{}", "{}");
+		RazorpayClient razorpay = new RazorpayClient("", "");
 		JSONObject paymentLinkRequest = new JSONObject();
 		paymentLinkRequest.put("amount",1000);
 		paymentLinkRequest.put("currency","INR");
@@ -22,9 +21,9 @@ public class Main {
 		paymentLinkRequest.put("reference_id","TS1997");
 		paymentLinkRequest.put("description","Payment for policy no #23456");
 		JSONObject customer = new JSONObject();
-		customer.put("name","Hardik Bagaria");
-		customer.put("contact","+919967627909");
-		customer.put("email","hbagaria2005@example.com");
+		customer.put("name","");
+		customer.put("contact","");
+		customer.put("email","");
 		paymentLinkRequest.put("customer",customer);
 		JSONObject notify = new JSONObject();
 		notify.put("whatsapp",true);
