@@ -279,6 +279,15 @@ public class Processes {
 	    
 	    return HSN;
 	}
+	public static void addItem(String itemName, int HSNCode, String Per) throws ClassNotFoundException, SQLException {
+		Connection c = getConnection();
+		String sql = "INSERT INTO `items`(`Item`,`HSN`,`per`) VALUES (?,?,?);";
+		PreparedStatement ps = c.prepareStatement(sql);
+        ps.setString(1, itemName);
+        ps.setInt(2, HSNCode);
+        ps.setString(3, Per);
+        ps.executeUpdate();
+	}
 
 	public String getPer(String ItemName) throws ClassNotFoundException, SQLException {
 	    Connection c = getConnection();

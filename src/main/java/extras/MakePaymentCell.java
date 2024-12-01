@@ -22,8 +22,8 @@ public class MakePaymentCell extends Cell {
     public MakePaymentCell(String amount, String transactionNote) {
         super(6, 3); // Set rowspan and colspan
 
-        String upiId = "hbagaria2007-1@okicici";
-        String name = "Hardik Bagaria";
+        String upiId = "";
+        String name = "";
         try {
             // Create UPI URL
             String upiUrl = "upi://pay?pa=" + upiId + "&pn=" + name + "&am=" + amount + "&tn=" + transactionNote;

@@ -10,6 +10,10 @@ public class NumberOnlyTextField extends JTextField {
         super(defaultValue); // Set the default value
         ((AbstractDocument) this.getDocument()).setDocumentFilter(new NumberFilter());
     }
+	public NumberOnlyTextField() {
+        super(); // Set the default value
+        ((AbstractDocument) this.getDocument()).setDocumentFilter(new NumberFilter());
+    }
 
     private static class NumberFilter extends DocumentFilter {
         @Override

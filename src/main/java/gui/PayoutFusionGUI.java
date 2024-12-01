@@ -57,7 +57,7 @@ public class PayoutFusionGUI {
         // Load the image
         BufferedImage originalImage = null;
         try {
-            originalImage = ImageIO.read(new File("C:\\Users\\hardik\\eclipse-workspace\\PayoutFusion\\src\\main\\java\\assets\\logo.png"));
+            originalImage = ImageIO.read(new File("C:\\Users\\hardik\\eclipse-workspace\\PayoutFusion\\logo.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,7 +104,7 @@ public class PayoutFusionGUI {
 
         // Define buttons and their corresponding panels
         String[] buttonNames = {
-            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "View Payments"
+            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "Add Items"
         };
         for (String buttonName : buttonNames) {
             JButton button = createStyledButton(buttonName);
@@ -163,10 +163,8 @@ public class PayoutFusionGUI {
             case "View Ledger":
             	newPanel = new ViewLedgerPanel();
             	break;
-            // Default case for unhandled panel names
-            default:
-                newPanel = createNewPanel(panelName); // Fallback to default
-                break;
+            case "Add Items":
+            	newPanel = new AddItemsPanel();
         }
 
         panelsMap.put(panelName, newPanel);
