@@ -94,7 +94,7 @@ public class ViewLedgerPanel extends JPanel {
         this.add(todatePicker);
         
         // Table Setup
-        String[] columnNames = {"BillNo", "Date", "totalQuantity", "TotalValue", "GST", "Transportation", "GrandTotal"};
+        String[] columnNames = {"Date", "Particulars", "Vch Type", "Vch No", "Vch Remark", "Debit", "Credit"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
 			private static final long serialVersionUID = 1L;
 
@@ -143,12 +143,15 @@ public class ViewLedgerPanel extends JPanel {
                     while (rs.next()) {
                         int billNo = rs.getInt("BillNo");
                         String date = rs.getString("Date");
-                        int totalQuantity = (int) rs.getDouble("totalQuantity");
-                        double totalValue = rs.getDouble("TotalValue");
-                        double gst = rs.getDouble("gst");
-                        double transportation = rs.getDouble("Transportation");
                         double grandTotal = rs.getDouble("grandTotal");
-                        tableModel.addRow(new Object[]{billNo, date, totalQuantity, totalValue, gst, transportation, grandTotal});
+                        tableModel.addRow(new Object[]{date, "PURCHASE GST", "PURCHASE", billNo, "", "", grandTotal});
+                    }
+                    ResultSet rs1 = Processes.viewPayments(name, fromdate.format(format), todate.format(format));
+                    while (rs1.next()) {
+                        String date = rs1.getString("date");
+                        int amountPaid = rs1.getInt("amountPaid");
+                        String remarks = rs1.getString("remarks");
+                        tableModel.addRow(new Object[]{date, "Payment GST", "Payment", "", remarks, amountPaid, ""});
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();

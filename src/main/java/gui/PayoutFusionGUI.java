@@ -104,7 +104,7 @@ public class PayoutFusionGUI {
 
         // Define buttons and their corresponding panels
         String[] buttonNames = {
-            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "Add Items"
+            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "Add Items","Mark Payment"
         };
         for (String buttonName : buttonNames) {
             JButton button = createStyledButton(buttonName);
@@ -165,6 +165,10 @@ public class PayoutFusionGUI {
             	break;
             case "Add Items":
             	newPanel = new AddItemsPanel();
+            	break;
+            case "Mark Payment":
+            	newPanel = new MarkPayment();
+            	break;
         }
 
         panelsMap.put(panelName, newPanel);

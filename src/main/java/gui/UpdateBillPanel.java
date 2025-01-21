@@ -49,6 +49,7 @@ public class UpdateBillPanel extends JPanel {
     private JTextField gstField;
     private JTextField transportationField;
     private JTextField grandTotalField;
+    private JTextField roundoffField;
 	private static final long serialVersionUID = 1L;
 	public UpdateBillPanel() throws ClassNotFoundException, SQLException {
         this.setBackground(Color.WHITE);
@@ -268,38 +269,46 @@ public class UpdateBillPanel extends JPanel {
 
         // Total Taxable Value
         JLabel totalTaxableValueLabel = new JLabel("Total Taxable Value:");
-        totalTaxableValueLabel.setBounds(10, 591, 150, 30);
+        totalTaxableValueLabel.setBounds(10, 591, 100, 30);
         this.add(totalTaxableValueLabel);
         totalTaxableValueField = new JTextField();
-        totalTaxableValueField.setBounds(170, 591, 150, 30);
-        totalTaxableValueField.setEditable(false);
+        totalTaxableValueField.setBounds(110, 591, 100, 30);
+        totalTaxableValueField.setEnabled(false);
         this.add(totalTaxableValueField);
 
         // GST
         JLabel gstLabel = new JLabel("GST@18%:");
-        gstLabel.setBounds(330, 591, 100, 30);
+        gstLabel.setBounds(220, 591, 60, 30);
         this.add(gstLabel);
         gstField = new JTextField();
-        gstField.setBounds(430, 591, 100, 30);
-        gstField.setEditable(false);
+        gstField.setBounds(280, 591, 100, 30);
+        gstField.setEnabled(false);
         this.add(gstField);
 
         // Transportation
         JLabel transportationLabel = new JLabel("Transportation:");
-        transportationLabel.setBounds(540, 591, 120, 30);
+        transportationLabel.setBounds(390, 591, 100, 30);
         this.add(transportationLabel);
-        transportationField = new JTextField("");
-        transportationField.setBounds(670, 591, 100, 30);
-        transportationField.setEditable(false);
+        transportationField = new JTextField("0");
+        transportationField.setBounds(490, 591, 100, 30);
         this.add(transportationField);
-
+        
+        //Round off
+        JLabel roundoffLabel = new JLabel("Round off:");
+        roundoffLabel.setBounds(600, 591, 120, 30);
+        this.add(roundoffLabel);
+        roundoffField = new JTextField("0");
+        roundoffField.setBounds(670, 591, 100, 30);
+        roundoffField.setEnabled(false);
+        this.add(roundoffField);
+        
         // Grand Total
         JLabel grandTotalLabel = new JLabel("Grand Total:");
         grandTotalLabel.setBounds(780, 591, 100, 30);
         this.add(grandTotalLabel);
         grandTotalField = new JTextField();
         grandTotalField.setBounds(890, 591, 100, 30);
-        grandTotalField.setEditable(false);
+        grandTotalField.setEnabled(false);
         this.add(grandTotalField);
         transportationField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -322,7 +331,7 @@ public class UpdateBillPanel extends JPanel {
             		if((String) comboBox.getSelectedItem() != "--Select BillNo--") {
 	            		 try {
 	            			addItemButton.setEnabled(true);
-	            	        transportationField.setEditable(true);
+	            	        transportationField.setEnabled(true);
 	                    	DefaultTableModel model = (DefaultTableModel) table.getModel();
 	                        model.setRowCount(0);
 	            			int selectedItem = Integer.parseInt((String) comboBox.getSelectedItem());
@@ -360,7 +369,7 @@ public class UpdateBillPanel extends JPanel {
 						}	 
             		}else {
             			addItemButton.setEnabled(false);
-            	        transportationField.setEditable(false);
+            	        transportationField.setEnabled(false);
             	        PartyName.setEnabled(false);
             			datePicker.clear();
             			PartyName.setSelectedIndex(0);
@@ -466,9 +475,10 @@ public class UpdateBillPanel extends JPanel {
                     String VDetails = VField.getText();
                     Double TaxableAmount = Double.parseDouble(totalTaxableValueField.getText());
                     Double gst = Double.parseDouble(gstField.getText());
+                    Double roundoff = Double.parseDouble(roundoffField.getText());
                     Double Total = Double.parseDouble(grandTotalField.getText());
                     Double Transportation = Double.parseDouble(transportationField.getText());
-                    Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total, totalquantity);
+                    Processes.cBill(Bno, selectedItem, formattedDate, VDetails, TaxableAmount, gst, Transportation, Total, totalquantity,roundoff);
                     String gstno =Processes.getGST(selectedItem);
 	                if ("27".equals(gstno.substring(0, 2))) {
 		            	BillGenGST billGenGST = new BillGenGST();
@@ -561,7 +571,7 @@ public class UpdateBillPanel extends JPanel {
         });
 
 	}
-	private void updateTotals() {
+    private void updateTotals() {
         double totalTaxableValue = 0;
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             double amount = (Double) tableModel.getValueAt(i, 4);
@@ -580,7 +590,14 @@ public class UpdateBillPanel extends JPanel {
         }
 
         double grandTotal = totalTaxableValue + gst + transportation;
-        grandTotalField.setText(String.format("%.2f", grandTotal));
+
+        // Round the grand total and display in the roundoffField
+        long roundedGrandTotal = Math.round(grandTotal);
+        grandTotalField.setText(String.format("%d", roundedGrandTotal));
+
+        // Calculate and display the difference (round-off adjustment)
+        double roundOffDifference = roundedGrandTotal - grandTotal;
+        roundoffField.setText(String.format("%.2f", roundOffDifference));
     }
 
     // Button Renderer class

@@ -69,7 +69,17 @@ public class Processes {
         c.close();
         return stringList;
     }
-
+    
+    public static void addAmt(String name, double amt) throws ClassNotFoundException, SQLException {
+        String updateQuery = "UPDATE partydetails SET OAmt = OAmt + ? WHERE Name = ?";
+        Connection c = getConnection();
+        PreparedStatement ps = c.prepareStatement(updateQuery);
+        ps.setDouble(1, amt);
+        ps.setString(2, name);
+        ps.executeUpdate();
+        ps.close();
+        c.close();
+    }
     // Generalized method to fetch a detail by name
     public static String getDetail(String detail, String Name) throws ClassNotFoundException, SQLException {
         String result = null;
@@ -86,6 +96,7 @@ public class Processes {
         c.close();
         return result;
     }
+    
 
     public static String getVDetails(int BillNo) throws ClassNotFoundException, SQLException {
         return getDetailByBillNo("VehicleDetails", BillNo);
@@ -112,6 +123,9 @@ public class Processes {
     }
     public static String getGrandTotalValue(int BillNo) throws ClassNotFoundException, SQLException {
     	return getDetailByBillNo("grandTotal", BillNo);
+    }
+    public static String getRoundOff(int BillNo) throws ClassNotFoundException, SQLException {
+    	return getDetailByBillNo("roundoff", BillNo);
     }
     public static String getTotalQuantity(int BillNo) throws ClassNotFoundException, SQLException {
     	return getDetailByBillNo("totalQuantity", BillNo);
@@ -164,9 +178,9 @@ public class Processes {
         c.close();
     }
 
-    public static void cBill(int billNo, String pName, String date, String vehicleDetails, Double TotalValue, Double GST, Double Transportation, Double GrandTotal,Double totalQuantity) throws ClassNotFoundException, SQLException {
+    public static void cBill(int billNo, String pName, String date, String vehicleDetails, Double TotalValue, Double GST, Double Transportation, Double GrandTotal,Double totalQuantity, Double roundoff) throws ClassNotFoundException, SQLException {
         Connection c = getConnection();
-        String sql = "INSERT INTO billstable(BillNo, PartyName, Date, VehicleDetails, TotalValue, gst, Transportation, grandTotal,totalQuantity) VALUES(?,?,?,?,?,?,?,?,?);";
+        String sql = "INSERT INTO billstable(BillNo, PartyName, Date, VehicleDetails, TotalValue, gst, Transportation, grandTotal,totalQuantity,roundoff) VALUES(?,?,?,?,?,?,?,?,?,?);";
         PreparedStatement ps = c.prepareStatement(sql);
         ps.setInt(1, billNo);
         ps.setString(2, pName);
@@ -177,8 +191,16 @@ public class Processes {
         ps.setDouble(7, Transportation);
         ps.setDouble(8, GrandTotal);
         ps.setDouble(9, totalQuantity);
+        ps.setDouble(10, roundoff);
         ps.executeUpdate();
         ps.close();
+        
+        String updateQuery = "UPDATE partydetails SET OAmt = OAmt + ? WHERE Name = ?";
+        PreparedStatement ps1 = c.prepareStatement(updateQuery);
+        ps1.setDouble(1, GrandTotal);
+        ps1.setString(2, pName);
+        ps1.executeUpdate();
+        ps1.close();
         c.close();
     }
 
@@ -221,6 +243,9 @@ public class Processes {
     public static String getDestination(String Name) throws ClassNotFoundException, SQLException {
         return getDetail("Destination", Name);
     }
+    public static String getOAmt(String Name) throws ClassNotFoundException, SQLException {
+        return getDetail("OAmt", Name);
+    }
     public static void updateParty(String name, String address1FieldData, String address2FieldData,String address3FieldData, String gstFieldData, String cntPersonFieldData, String phoneNoFieldData,String emailFieldData, String destinationFieldData) throws ClassNotFoundException, SQLException {
     	Connection c = getConnection();
     	String sql = "UPDATE partydetails SET Address1 = '"+ address1FieldData +"', Address2= '"+ address2FieldData +"', Address3= '"+ address3FieldData +"', GST= '"+ gstFieldData +"', CntPerson= '"+ cntPersonFieldData +"', PhoneNo= '"+ phoneNoFieldData +"', Email= '"+ emailFieldData +"', Destination= '"+ destinationFieldData +"' WHERE Name= '"+ name +"';";
@@ -241,21 +266,63 @@ public class Processes {
     }
 	public static void removeBill(int billNo) throws ClassNotFoundException, SQLException {
 		Connection c = getConnection();
+		String partyName = getName(billNo); // Get the party name
+		double grandTotalValue = Double.parseDouble(getGrandTotalValue(billNo));
+		String sql2 = "UPDATE partydetails SET OAmt = OAmt - ? WHERE Name = ?";
+		PreparedStatement pstmt = c.prepareStatement(sql2);
+		pstmt.setDouble(1, grandTotalValue);
+		pstmt.setString(2, partyName);
+		pstmt.executeUpdate();
+		pstmt.close();
 		String sql = "DELETE FROM itemstable WHERE BillNo=?";
 		PreparedStatement ps = c.prepareStatement(sql);
         ps.setInt(1, billNo);
         ps.executeUpdate();
+        ps.close();
         String sql1 = "DELETE FROM billstable WHERE BillNo=?";
         PreparedStatement ps1 = c.prepareStatement(sql1);
         ps1.setInt(1, billNo);
         ps1.executeUpdate();
+        ps1.close();
+        c.close();
+	}
+	public static void OAmtUpdate(String partyName, int amtPaid) throws ClassNotFoundException, SQLException {
+		Connection c = getConnection();
+		String sql = "UPDATE partydetails SET OAmt = OAmt - ? WHERE Name = ?";
+		PreparedStatement ps = c.prepareStatement(sql);
+		ps.setInt(1,amtPaid);
+		ps.setString(2, partyName);
+		ps.executeUpdate();
+		ps.close();
+		c.close();
+	}
+	public static void markPayment(String partyName, String date, int amount, String remarks) throws ClassNotFoundException, SQLException {
+		Connection c = getConnection();
+		String sql = "INSERT INTO mark_payment VALUES(?,?,?,?);";
+		PreparedStatement ps = c.prepareStatement(sql);
+		ps.setString(1, partyName);
+		ps.setString(2, date);
+		ps.setInt(3, amount);
+		ps.setString(4, remarks);
+		ps.executeUpdate();
+		ps.close();
+		c.close();
 	}
 	public static ResultSet viewLedger(String name, String fromdate, String todate) throws ClassNotFoundException, SQLException {
 	    Connection c = getConnection();
-	    String sql = "SELECT BillNo, Date, totalQuantity, TotalValue, gst, Transportation, grandTotal " +
+	    String sql = "SELECT BillNo, Date, grandTotal " +
 	                 "FROM payoutfusion.billstable " +
 	                 "WHERE STR_TO_DATE(Date, '%d/%m/%Y') BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y') " +
 	                 "AND PartyName = ?;";
+	    PreparedStatement ps = c.prepareStatement(sql);
+	    ps.setString(1, fromdate);
+	    ps.setString(2, todate);
+	    ps.setString(3, name);
+	    return ps.executeQuery();
+	}
+	public static ResultSet viewPayments(String name, String fromdate, String todate) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    String sql = "SELECT date, amountPaid, remarks FROM payoutfusion.mark_payment WHERE STR_TO_DATE(date, '%d/%m/%Y') BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y') AND partyName = ?;";
 	    PreparedStatement ps = c.prepareStatement(sql);
 	    ps.setString(1, fromdate);
 	    ps.setString(2, todate);
@@ -306,7 +373,6 @@ public class Processes {
 	    
 	    return per;
 	}
-
 
 	
 }
