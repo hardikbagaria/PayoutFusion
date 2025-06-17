@@ -20,7 +20,7 @@ public class PDFPrinter {
     	StringBuilder errorMessages = new StringBuilder();
         try {
             // Load the PDF document
-            PDDocument document = PDDocument.load(new File(filePath));
+        	PDDocument document = PDDocument.load(new File(filePath));
 
             // Create a PrinterJob
             PrinterJob printerJob = PrinterJob.getPrinterJob();

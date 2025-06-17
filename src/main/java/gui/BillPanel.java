@@ -66,7 +66,11 @@ public class BillPanel extends JPanel {
         dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         dateLabel.setBounds(220, 51, dateLabel.getPreferredSize().width, 30);
         this.add(dateLabel);
-        DatePickerSettings dateSettings = new DatePickerSettings();
+        DatePickerSettings dateSettings = new DatePickerSettings();   
+        dateSettings.setVisibleClearButton(false);
+        dateSettings.setVisibleNextYearButton(false);
+        dateSettings.setVisiblePreviousYearButton(false);
+        dateSettings.setAllowEmptyDates(false);
         dateSettings.setFormatForDatesCommonEra(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         DatePicker datePicker = new DatePicker(dateSettings);
         datePicker.setBounds(257, 51, datePicker.getPreferredSize().width, 30);
@@ -243,7 +247,7 @@ public class BillPanel extends JPanel {
                     return;
                 }
                     try {
-                        int quantity = Integer.parseInt(quantityText);
+                    	double quantity = Double.parseDouble(quantityText);
                         double rate = Double.parseDouble(rateText);
                         double amount = quantity * rate;
 

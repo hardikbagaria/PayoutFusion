@@ -67,12 +67,6 @@ public class MarkPayment extends JPanel {
                 		paidAmtField.setText("0");
                 		OAmt.setText("0");
                 		set(false);
-                		
-                		
-                		
-                		
-                		
-                		
                 	}else {
                 		try {
                 			String amt = Processes.getOAmt(name).toString();
@@ -196,7 +190,6 @@ public class MarkPayment extends JPanel {
                 // Process the valid data
                 try {
                 	Processes.markPayment(selectedItem, date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), amtPaid, remarksText);
-                    Processes.OAmtUpdate(selectedItem, amtPaid);
                     dropdown.setSelectedIndex(0);
                     set(false);
                 } catch (ClassNotFoundException | SQLException ex) {

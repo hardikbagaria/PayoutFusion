@@ -38,7 +38,6 @@ public class PrintBillsPanel extends JPanel {
         this.add(titleLabel);
         //Bill dropdown
         ArrayList<String> allBills = Processes.BillParty();
-        Collections.sort(allBills);
         String[] optionsArray = new String[allBills.size()];
         allBills.toArray(optionsArray);
         JComboBox<String> comboBox = new JComboBox<String>(optionsArray);
@@ -80,7 +79,7 @@ public class PrintBillsPanel extends JPanel {
         		if(comboBox.getSelectedItem() != "--Select Bill--") {
                 	String def = (String) comboBox.getSelectedItem();
                 	String orig = def + ".pdf";
-                	String dupl = def + "(duplicate).pdf";
+                	String dupl = def + " (duplicate).pdf";
                 	PDFPrinter.printPDF(orig);
                 	PDFPrinter.printPDF(dupl);
         		}

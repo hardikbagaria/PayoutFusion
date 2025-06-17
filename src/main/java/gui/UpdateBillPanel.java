@@ -65,17 +65,40 @@ public class UpdateBillPanel extends JPanel {
         titleLabel.setBounds(10, 10, 300, 30); // x, y, width, height
         this.add(titleLabel);
         
-        //Bill dropdown
+     // Bill dropdown
         ArrayList<String> allBills = Processes.BillNo();
-        Collections.sort(allBills);
-        String[] optionsArray = new String[allBills.size()];
-        allBills.toArray(optionsArray);
-        JComboBox<String> comboBox = new JComboBox<String>(optionsArray);
+
+        // Convert the strings to integers for numerical sorting
+        ArrayList<Integer> intBills = new ArrayList<>();
+        for (String bill : allBills) {
+            try {
+                intBills.add(Integer.parseInt(bill));
+            } catch (NumberFormatException e) {
+                // Handle any non-integer bills here (if applicable)
+            }
+        }
+
+        // Sort the bills in descending order
+        intBills.sort(Collections.reverseOrder());
+
+        // Convert the integers back to strings for the combo box
+        String[] optionsArray = new String[intBills.size()];
+        for (int i = 0; i < intBills.size(); i++) {
+            optionsArray[i] = String.valueOf(intBills.get(i));
+        }
+
+        // Create the JComboBox with sorted bill numbers in descending order
+        JComboBox<String> comboBox = new JComboBox<>(optionsArray);
+
+        // Insert default value at the beginning
         String defaultValue = "--Select BillNo--";
         comboBox.insertItemAt(defaultValue, 0);
         comboBox.setSelectedIndex(0);
+
+        // Set combo box properties
         comboBox.setBounds(10, 50, 200, 30);
         add(comboBox);
+
         
         // Date
         JLabel dateLabel = new JLabel("Date:");
@@ -83,6 +106,10 @@ public class UpdateBillPanel extends JPanel {
         dateLabel.setBounds(220, 51, dateLabel.getPreferredSize().width, 30);
         this.add(dateLabel);
         DatePickerSettings dateSettings = new DatePickerSettings();
+        dateSettings.setVisibleClearButton(false);
+        dateSettings.setVisibleNextYearButton(false);
+        dateSettings.setVisiblePreviousYearButton(false);
+        dateSettings.setAllowEmptyDates(false);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         dateSettings.setFormatForDatesCommonEra(format);
         DatePicker datePicker = new DatePicker(dateSettings);
@@ -235,7 +262,7 @@ public class UpdateBillPanel extends JPanel {
                     return;
                 }
                     try {
-                        int quantity = Integer.parseInt(quantityText);
+                    	double quantity = Double.parseDouble(quantityText);
                         double rate = Double.parseDouble(rateText);
                         double amount = quantity * rate;
 
@@ -514,7 +541,6 @@ public class UpdateBillPanel extends JPanel {
                 } catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
             }

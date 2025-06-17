@@ -66,7 +66,7 @@ public class AddItemsPanel extends JPanel {
         });
         // Create Update Party and Delete Party buttons
         addItemButton = new JButton("Add Item");
-        addItemButton.setBounds(920, 629, 150, 40);
+        addItemButton.setBounds(800, 300, 150, 40);
         addItemButton.setEnabled(false);
         addItemButton.setFont(new Font("Arial", Font.PLAIN, 16));
         addItemButton.setFocusPainted(false); // Remove focus outline

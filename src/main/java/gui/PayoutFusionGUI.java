@@ -104,8 +104,7 @@ public class PayoutFusionGUI {
 
         // Define buttons and their corresponding panels
         String[] buttonNames = {
-            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "Add Items","Mark Payment"
-        };
+            "Create Bills", "Update Bills", "Create Party", "Update Party", "Print & Send Bills", "View Ledger", "Add Items","Mark Payment"};
         for (String buttonName : buttonNames) {
             JButton button = createStyledButton(buttonName);
             sidebar.add(button);
@@ -169,6 +168,18 @@ public class PayoutFusionGUI {
             case "Mark Payment":
             	newPanel = new MarkPayment();
             	break;
+            case "Add Purchase Party":
+            	newPanel = new AddPurchaseParty();
+            	break;
+            case "Add Purchase Bill":
+            	newPanel = new AddPurchaseBill();
+            	break;
+            case "Mark Purchase Payment":
+            	newPanel = new MarkPurchasePayment();
+            	break;
+            case "View Purchase Ledger":
+            	newPanel = new ViewPurchaseLedger();
+            	break;
         }
 
         panelsMap.put(panelName, newPanel);
@@ -183,15 +194,6 @@ public class PayoutFusionGUI {
 
         // Highlight the selected button
         highlightButton(button);
-    }
-
-    private static JPanel createNewPanel(String panelName) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        JLabel label = new JLabel(panelName + " Panel");
-        label.setFont(new Font("Arial", Font.PLAIN, 24));
-        panel.add(label);
-        return panel;
     }
 
     private static void switchPanel(String panelName) {

@@ -2,6 +2,10 @@ package database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import com.github.lgooddatepicker.components.DatePicker;
 
 public class Processes {
 
@@ -46,14 +50,30 @@ public class Processes {
         String sql = "SELECT BillNo,PartyName FROM billstable;";
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery(sql);
+        
         while (rs.next()) {
-            stringList.add(rs.getString("BillNo") +" "+rs.getString("PartyName"));
+            stringList.add(rs.getString("BillNo") + " " + rs.getString("PartyName"));
         }
+        
         rs.close();
         s.close();
         c.close();
+        
+        // Sort the stringList based on the numeric BillNo part (descending)
+        Collections.sort(stringList, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                // Extract BillNo part (assumes the BillNo is the first part of the string)
+                int billNo1 = Integer.parseInt(s1.split(" ")[0]);
+                int billNo2 = Integer.parseInt(s2.split(" ")[0]);
+                
+                // Sort in descending order based on BillNo
+                return Integer.compare(billNo2, billNo1);  // Reverse order for descending
+            }
+        });
         return stringList;
     }
+
 
     public static ArrayList<String> Items() throws ClassNotFoundException, SQLException {
         ArrayList<String> stringList = new ArrayList<>();
@@ -68,17 +88,6 @@ public class Processes {
         s.close();
         c.close();
         return stringList;
-    }
-    
-    public static void addAmt(String name, double amt) throws ClassNotFoundException, SQLException {
-        String updateQuery = "UPDATE partydetails SET OAmt = OAmt + ? WHERE Name = ?";
-        Connection c = getConnection();
-        PreparedStatement ps = c.prepareStatement(updateQuery);
-        ps.setDouble(1, amt);
-        ps.setString(2, name);
-        ps.executeUpdate();
-        ps.close();
-        c.close();
     }
     // Generalized method to fetch a detail by name
     public static String getDetail(String detail, String Name) throws ClassNotFoundException, SQLException {
@@ -194,13 +203,6 @@ public class Processes {
         ps.setDouble(10, roundoff);
         ps.executeUpdate();
         ps.close();
-        
-        String updateQuery = "UPDATE partydetails SET OAmt = OAmt + ? WHERE Name = ?";
-        PreparedStatement ps1 = c.prepareStatement(updateQuery);
-        ps1.setDouble(1, GrandTotal);
-        ps1.setString(2, pName);
-        ps1.executeUpdate();
-        ps1.close();
         c.close();
     }
 
@@ -243,9 +245,6 @@ public class Processes {
     public static String getDestination(String Name) throws ClassNotFoundException, SQLException {
         return getDetail("Destination", Name);
     }
-    public static String getOAmt(String Name) throws ClassNotFoundException, SQLException {
-        return getDetail("OAmt", Name);
-    }
     public static void updateParty(String name, String address1FieldData, String address2FieldData,String address3FieldData, String gstFieldData, String cntPersonFieldData, String phoneNoFieldData,String emailFieldData, String destinationFieldData) throws ClassNotFoundException, SQLException {
     	Connection c = getConnection();
     	String sql = "UPDATE partydetails SET Address1 = '"+ address1FieldData +"', Address2= '"+ address2FieldData +"', Address3= '"+ address3FieldData +"', GST= '"+ gstFieldData +"', CntPerson= '"+ cntPersonFieldData +"', PhoneNo= '"+ phoneNoFieldData +"', Email= '"+ emailFieldData +"', Destination= '"+ destinationFieldData +"' WHERE Name= '"+ name +"';";
@@ -266,14 +265,6 @@ public class Processes {
     }
 	public static void removeBill(int billNo) throws ClassNotFoundException, SQLException {
 		Connection c = getConnection();
-		String partyName = getName(billNo); // Get the party name
-		double grandTotalValue = Double.parseDouble(getGrandTotalValue(billNo));
-		String sql2 = "UPDATE partydetails SET OAmt = OAmt - ? WHERE Name = ?";
-		PreparedStatement pstmt = c.prepareStatement(sql2);
-		pstmt.setDouble(1, grandTotalValue);
-		pstmt.setString(2, partyName);
-		pstmt.executeUpdate();
-		pstmt.close();
 		String sql = "DELETE FROM itemstable WHERE BillNo=?";
 		PreparedStatement ps = c.prepareStatement(sql);
         ps.setInt(1, billNo);
@@ -285,16 +276,6 @@ public class Processes {
         ps1.executeUpdate();
         ps1.close();
         c.close();
-	}
-	public static void OAmtUpdate(String partyName, int amtPaid) throws ClassNotFoundException, SQLException {
-		Connection c = getConnection();
-		String sql = "UPDATE partydetails SET OAmt = OAmt - ? WHERE Name = ?";
-		PreparedStatement ps = c.prepareStatement(sql);
-		ps.setInt(1,amtPaid);
-		ps.setString(2, partyName);
-		ps.executeUpdate();
-		ps.close();
-		c.close();
 	}
 	public static void markPayment(String partyName, String date, int amount, String remarks) throws ClassNotFoundException, SQLException {
 		Connection c = getConnection();
@@ -310,10 +291,7 @@ public class Processes {
 	}
 	public static ResultSet viewLedger(String name, String fromdate, String todate) throws ClassNotFoundException, SQLException {
 	    Connection c = getConnection();
-	    String sql = "SELECT BillNo, Date, grandTotal " +
-	                 "FROM payoutfusion.billstable " +
-	                 "WHERE STR_TO_DATE(Date, '%d/%m/%Y') BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y') " +
-	                 "AND PartyName = ?;";
+	    String sql = "SELECT BillNo, Date, grandTotal FROM payoutfusion.billstable WHERE STR_TO_DATE(Date, '%d/%m/%Y') BETWEEN STR_TO_DATE(?, '%d/%m/%Y') AND STR_TO_DATE(?, '%d/%m/%Y') AND PartyName = ?;";
 	    PreparedStatement ps = c.prepareStatement(sql);
 	    ps.setString(1, fromdate);
 	    ps.setString(2, todate);
@@ -374,5 +352,122 @@ public class Processes {
 	    return per;
 	}
 
+	public static String getOAmt(String name) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    String sql = "SELECT SUM(grandTotal) FROM payoutfusion.billstable WHERE PartyName = ?";
+	    String sql1 = "SELECT SUM(amountPaid) FROM payoutfusion.mark_payment WHERE partyName = ?";
+
+	    double totalBill = 0, totalPaid = 0;
+
+	    try (PreparedStatement ps = c.prepareStatement(sql)) {
+	        ps.setString(1, name);
+	        ResultSet rs = ps.executeQuery();
+	        if (rs.next()) {
+	            totalBill = rs.getDouble(1);
+	        }
+	    }
+
+	    try (PreparedStatement ps1 = c.prepareStatement(sql1)) {
+	        ps1.setString(1, name);
+	        ResultSet rs1 = ps1.executeQuery();
+	        if (rs1.next()) {
+	            totalPaid = rs1.getDouble(1);
+	        }
+	    }
+
+	    double outstandingAmount = totalBill - totalPaid;
+	    return (outstandingAmount % 1 == 0) ? String.valueOf((int) outstandingAmount) : String.valueOf(outstandingAmount);
+	}
 	
+	public static String getPrevAmt(String name, String fromDate) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    
+	    // Query to get total billed amount before the given date
+	    String sqlBills = "SELECT COALESCE(SUM(grandTotal), 0) FROM payoutfusion.billstable " +
+	                      "WHERE STR_TO_DATE(date, '%d/%m/%Y') < STR_TO_DATE(?, '%d/%m/%Y') " +
+	                      "AND partyName = ?;";
+	    
+	    // Query to get total amount paid before the given date
+	    String sqlPayments = "SELECT COALESCE(SUM(amountPaid), 0) FROM payoutfusion.mark_payment " +
+	                         "WHERE STR_TO_DATE(date, '%d/%m/%Y') < STR_TO_DATE(?, '%d/%m/%Y') " +
+	                         "AND partyName = ?;";
+	    
+	    PreparedStatement psBills = c.prepareStatement(sqlBills);
+	    psBills.setString(1, fromDate);
+	    psBills.setString(2, name);
+	    
+	    PreparedStatement psPayments = c.prepareStatement(sqlPayments);
+	    psPayments.setString(1, fromDate);
+	    psPayments.setString(2, name);
+	    
+	    ResultSet rsBills = psBills.executeQuery();
+	    ResultSet rsPayments = psPayments.executeQuery();
+	    
+	    double totalBills = 0, totalPayments = 0;
+	    
+	    if (rsBills.next()) {
+	        totalBills = rsBills.getDouble(1);
+	    }
+	    if (rsPayments.next()) {
+	        totalPayments = rsPayments.getDouble(1);
+	    }
+	    
+	    double pendingAmount = totalBills - totalPayments;
+	    
+	    // Closing resources
+	    rsBills.close();
+	    rsPayments.close();
+	    psBills.close();
+	    psPayments.close();
+	    c.close();
+	    
+	    return String.valueOf(pendingAmount);
+	}
+
+	public static boolean addPParty(String nameFieldData) throws ClassNotFoundException, SQLException {
+	    Connection c = getConnection();
+	    
+	    // Check if the party already exists
+	    String checkSql = "SELECT COUNT(*) FROM `purchaseparty` WHERE `name` = ?";
+	    PreparedStatement checkPs = c.prepareStatement(checkSql);
+	    checkPs.setString(1, nameFieldData);
+	    ResultSet rs = checkPs.executeQuery();
+	    rs.next(); // Move cursor to the first row
+	    boolean exists = rs.getInt(1) > 0;
+	    rs.close();
+	    checkPs.close();
+	    if (exists) {
+	        c.close();
+	        return false; // Party already exists
+	    }
+	    // If not exists, insert new party
+	    String sql = "INSERT INTO `purchaseparty`(`name`) VALUES(?);";
+	    PreparedStatement ps = c.prepareStatement(sql);
+	    ps.setString(1, nameFieldData);
+	    ps.executeUpdate();
+	    // Cleanup resources
+	    ps.close();
+	    c.close();
+	    return true; // Successfully added
+	}
+	public static ArrayList<String> getPParty() throws ClassNotFoundException, SQLException {
+	    ArrayList<String> partyNames = new ArrayList<>();
+	    
+	    // Establish database connection
+	    Connection c = getConnection();
+	    
+	    // Define SQL query
+	    String query = "SELECT name FROM payoutfusion.purchaseparty";
+	    
+	    // Execute query
+	    try (PreparedStatement ps = c.prepareStatement(query);
+	         ResultSet rs = ps.executeQuery()) {
+	        
+	        // Iterate through results and add names to the list
+	        while (rs.next()) {
+	            partyNames.add(rs.getString("name"));
+	        }
+	    }   
+	    return partyNames;
+	}
 }
